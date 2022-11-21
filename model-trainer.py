@@ -60,20 +60,8 @@ class Config(Tap):
     is_pretrained: bool = True
 
     batch_size: int = 4
-    # LIBRISPEECH_CLEAN_100: 25
-        # T:50
 
-    #AISHELL-1:50  / pku:96
-        # TP:80
-        # T: 
-    #AIDATATANG: 35
-        # TP: 80
-        # T: 100
-        
-    # LIBRISPEECH_CLEAN_100: 
 
-    
-    # 文件路径 参数配置
     model_type: str = 'nopretrained-' # default
     if is_pretrained is True:
         model_type = 'pretrained-'
@@ -756,12 +744,6 @@ if __name__ == "__main__":
         # 新增：DDP backend初始化
         torch.cuda.set_device('cuda:'+str(local_rank))
         dist.init_process_group(backend='nccl')  # nccl是GPU设备上最快、最推荐的后端
-        
-    # print(config.current_dataset)
-    # print(config.is_jointly_train)
-    
-
-    
     
     set_my_seed(config.seed)
     if os.path.exists(config.mode_mode_path_dataset):

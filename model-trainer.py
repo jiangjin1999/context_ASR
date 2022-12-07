@@ -34,7 +34,7 @@ from transformers.models import bart
 from processor import DataProcessor, TextDataProcessor, TextInputExample
 from utils import CustomSchedule, EarlyStopping, Similarity
 
-# from model.models import (BartForConditionalGeneration, )
+from model.modeling_bart import (BartForContextCorretion, BartModel)
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
@@ -49,7 +49,7 @@ class Config(Tap):
     # 如果想通过 .sh 传参数，就必须在代码中，重新进行这一步。
     seed: int = 2022
 
-    pwd: str = '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Cross_modal/TAP/'#'/home/jiangjin/ASR_CORRECTION/TAP/'
+    pwd: str = '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/'#'/home/jiangjin/ASR_CORRECTION/TAP/'
 
     # 需修改参数配置
     mode: str = 'train'    
@@ -65,7 +65,6 @@ class Config(Tap):
     model_type: str = 'nopretrained-' # default
     if is_pretrained is True:
         model_type = 'pretrained-'
-
 
     model_type = model_type + 'T-model'
         
@@ -752,9 +751,9 @@ if __name__ == "__main__":
         os.makedirs(config.mode_mode_path_dataset)
         
     if config.is_pretrained==True:
-        MODEL_TYPE = AutoModelForSeq2SeqLM.from_pretrained(config.pretrained_model)
+        MODEL_TYPE = BartForContextCorretion.from_pretrained(config.pretrained_model)
     else:
-        MODEL_TYPE = AutoModelForSeq2SeqLM.from_config(config.Model_config)
+        MODEL_TYPE = BartForContextCorretion.from_config(config.Model_config)
 
     trainer = Trainer(
         config,

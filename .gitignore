@@ -2,6 +2,7 @@ pretrained-T-model
 result_analysis
 pretrained-model
 
+data/zh
 pretrained-model/en/BART/*.bin
 pretrained-model/zh/BART/*.bin
 

@@ -1,10 +1,13 @@
-pretrained-T-model
-result_analysis
-pretrained-model
+# 文件夹
+.tmp
+T-model-baseline
+T-model-knn
+T-model-knn-ckpt
 
-data/zh
 pretrained-model/en/BART/*.bin
 pretrained-model/zh/BART/*.bin
+pretrained-model/zh/KNN_BART/pytorch_model.bin
+pretrained-model/checkpoint/AISHELL-1/*bin
 
 
 

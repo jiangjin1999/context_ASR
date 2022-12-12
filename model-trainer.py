@@ -36,12 +36,10 @@ from utils import CustomSchedule, EarlyStopping, Similarity
 
 from model.modeling_bart import (BartForContextCorretion, BartModel)
 
+
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3"
 # torch.autograd.set_detect_anomaly(True) 
-
-# TORCH_DISTRIBUTED_DEBUG="INFO"
-# os.environ["TORCH_DISTRIBUTED_DEBUG"] = "INFO"
 
 
 class Config(Tap):
@@ -49,24 +47,41 @@ class Config(Tap):
     # 如果想通过 .sh 传参数，就必须在代码中，重新进行这一步。
     seed: int = 2022
 
+
     pwd: str = '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/'#'/home/jiangjin/ASR_CORRECTION/TAP/'
 
-    # 需修改参数配置
+    # KNN Code  
+    # batch_size 的设定，如果原有baseline batch为100，那train为100，test dev doc的个数若小于100，则为为doc个数
+    train_batch_size: int = 100
+    dev_batch_size: int = 40
+    test_batch_size: int = 20
+    is_use_knn: bool = False
+    is_from_ckpt: bool = False
+    SEGMENTS: int = 1 #一个subsequence包含几个句子
+    max_seq_length: int = 40 # 一个句子的max length 是
+    
+    
+    
+
+
     mode: str = 'train'    
     is_use_DDP:bool = False
     
 
     current_dataset: str = 'AISHELL-1'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100'#'AIDATATANG' #['AISHELL-1', 'AIDATATANG', 'thchs'][0]
     is_pretrained: bool = True
+    language: str = 'en'
+    if current_dataset in ['AISHELL-1', 'AIDATATANG', 'thchs']:
+        is_zh = True
+        language = 'zh'
+    if language == 'en':
+        max_seq_length: int = 100
 
-    batch_size: int = 4
+    model_type: str = '' #'nopretrained-' # default
+    # if is_pretrained is True:
+    #     model_type = 'pretrained-'
 
-
-    model_type: str = 'nopretrained-' # default
-    if is_pretrained is True:
-        model_type = 'pretrained-'
-
-    model_type = model_type + 'T-model'
+    # model_type = model_type + 'T-model'
         
     mode_mode_path: str = pwd + model_type
     mode_mode_path_dataset: str = mode_mode_path + '/' + current_dataset
@@ -77,10 +92,7 @@ class Config(Tap):
     tensorboard_path: str =mode_mode_path_dataset + '/tensorboard/' 
 
     is_zh: bool = False
-    language: str = 'en'
-    if current_dataset in ['AISHELL-1', 'AIDATATANG', 'thchs']:
-        is_zh = True
-        language = 'zh'
+
 
     text_data_dir: str = pwd +'data/'+ language 
     
@@ -94,9 +106,7 @@ class Config(Tap):
     sampler = None
     # librispeech max length is 100
     # zh : 50
-    max_seq_length: int = 40
-    if language == 'en':
-        max_seq_length: int = 100
+
     learning_rate: float = 5e-5
     weight_decay: float = 0.02
     lr_scheduler_type: str = 'cosine'
@@ -164,10 +174,12 @@ class Trainer:
         text_tokenizer: AutoTokenizer,
         model: AutoModelForSeq2SeqLM,
         metric: Metric,
+        is_use_knn,
     ) -> None:
         self.config = config
         self.text_tokenizer = text_tokenizer
         self.metric = metric
+        self.is_use_knn = is_use_knn
 
 
         model.resize_token_embeddings(len(text_tokenizer))
@@ -185,33 +197,39 @@ class Trainer:
 
         if self.config.is_use_DDP is True:
             self.train_dataloader = self.create_DDP_dataloader(
-                dataset=text_processor.get_train_dataset(),
+                dataset=text_processor.get_train_dataset(self.config.train_batch_size),
+                batch_size=self.config.train_batch_size,
                 shuffle=False,
                 collate_fn=self.convert_examples_to_features,
             )
             self.dev_dataloader = self.create_dataloader(
-                dataset=text_processor.get_dev_dataset(),
+                dataset=text_processor.get_dev_dataset(self.config.dev_batch_size),
+                batch_size=self.config.dev_batch_size,
                 shuffle=False,
                 collate_fn=self.convert_examples_to_features,
             )
             self.test_dataloader = self.create_dataloader(
-                dataset=text_processor.get_test_dataset(),
+                dataset=text_processor.get_test_dataset(self.config.test_batch_size),
+                batch_size=self.config.test_batch_size,
                 shuffle=False,
                 collate_fn=self.convert_examples_to_features,
                 )
         else:   
             self.train_dataloader = self.create_dataloader(
-                dataset=text_processor.get_train_dataset(),
+                dataset=text_processor.get_train_dataset(self.config.train_batch_size),
+                batch_size=self.config.train_batch_size,
                 shuffle=self.config.shuffle,
                 collate_fn=self.convert_examples_to_features,
             )
             self.dev_dataloader = self.create_dataloader(
-                dataset=text_processor.get_dev_dataset(),
+                dataset=text_processor.get_dev_dataset(self.config.dev_batch_size),
+                batch_size=self.config.dev_batch_size,
                 shuffle=False,
                 collate_fn=self.convert_examples_to_features,
             )
             self.test_dataloader = self.create_dataloader(
-                dataset=text_processor.get_test_dataset(),
+                dataset=text_processor.get_test_dataset(self.config.test_batch_size),
+                batch_size=self.config.test_batch_size,
                 shuffle=False,
                 collate_fn=self.convert_examples_to_features,
             )
@@ -250,12 +268,12 @@ class Trainer:
         self.train_bar: tqdm = None
 
 
-    def create_DDP_dataloader(self, dataset: Dataset, collate_fn, shuffle) -> DataLoader:
+    def create_DDP_dataloader(self, dataset: Dataset, batch_size, collate_fn, shuffle) -> DataLoader:
         self.config.sampler = torch.utils.data.distributed.DistributedSampler(dataset)
         if self.config.is_use_DDP is True:
             return DataLoader(
                 dataset,
-                batch_size=self.config.batch_size,
+                batch_size=batch_size,
                 shuffle=shuffle, # self.config.shuffle,
                 collate_fn=collate_fn,
                 sampler=self.config.sampler
@@ -263,16 +281,16 @@ class Trainer:
         else:
             return DataLoader(
                 dataset,
-                batch_size=self.config.batch_size,
+                batch_size=batch_size,
                 shuffle=shuffle, # self.config.shuffle,
                 collate_fn=collate_fn,
                 # sampler=torch.utils.data.distributed.DistributedSampler(dataset)
             )
 
-    def create_dataloader(self, dataset: Dataset, collate_fn, shuffle) -> DataLoader:
+    def create_dataloader(self, dataset: Dataset, batch_size, collate_fn, shuffle) -> DataLoader:
         return DataLoader(
             dataset,
-            batch_size=self.config.batch_size,
+            batch_size=batch_size,
             shuffle=shuffle, # self.config.shuffle,
             collate_fn=collate_fn,
             # sampler=torch.utils.data.distributed.DistributedSampler(dataset)
@@ -357,48 +375,42 @@ class Trainer:
             logger.info(f'training epoch<{self.context_data.epoch}> ...')
         self.train_bar = tqdm(total=len(self.train_dataloader))
 
-        # for text_batch, in zip(self.train_dataloader, self.phoneme_train_dataloader, self.audio_train_dataloader):
-        for text_batch in self.train_dataloader:
-            
-            self.on_batch_start()
-            # pdb.set_trace()
-            self.context_data.lr = self.optimizer.defaults['lr']
-
-            self.train_epoch_text(text_batch)
+        with self.model.knn_memories_context(batch_size = self.config.train_batch_size, mode='train') as knn_memories: 
+            for text_batch in self.train_dataloader:
                 
-            if self.config.early_stop_flag:
-                if self.config.local_rank=='0':
-                    logger.info('early stopping')
-                    break
+                self.on_batch_start()
+                
+                self.context_data.lr = self.optimizer.defaults['lr']
 
-            self.on_batch_end()
+                input_ids, labels = text_batch
+                input_ids, labels = input_ids.to(
+                    self.config.get_device()), labels.to(self.config.get_device())
+
+
+                self.optimizer.zero_grad()    
+                
+                # forward on text data
+                output: Seq2SeqLMOutput = self.model(
+                    input_ids=input_ids, 
+                    labels=labels,
+                    decoder_knn_memories = knn_memories,
+                    )
+
+                self.context_data.loss = output.loss.sum().detach().cpu().numpy().item()
+                self.context_data.output_loss = output.loss
+                self.context_data.output_loss.backward()
+                
+
+                self.optimizer.step() 
+                self.lr_scheduler.step()  
+                    
+                if self.config.early_stop_flag:
+                    if self.config.local_rank=='0':
+                        logger.info('early stopping')
+                        break
+
+                self.on_batch_end()
     
-    def train_epoch_text(self, text_batch):
-        input_ids, labels = text_batch
-        input_ids, labels = input_ids.to(
-            self.config.get_device()), labels.to(self.config.get_device())
-        # print(input_ids[0][0:30])
-
-        # self.on_batch_start()
-
-        self.optimizer.zero_grad()    
-        
-        # forward on text data
-        output: Seq2SeqLMOutput = self.model(
-            input_ids=input_ids, labels=labels)
-
-        self.context_data.loss = output.loss.sum().detach().cpu().numpy().item()
-        self.context_data.output_loss = output.loss
-        self.context_data.output_loss.backward()
-        
-
-        # output.loss.sum().backward() #calculate the gradient
-        self.optimizer.step() # update the model para with gradient & for nn.DP 只有GPU_0上的模型参数得到了更新
-        self.lr_scheduler.step()  
-        # for name, param in self.model.named_parameters():
-        #     if param.grad is None:
-        #         print(name)     
-
 
     def evaluate(self, dataloader,):
         """handle the logit of evaluating
@@ -412,50 +424,33 @@ class Trainer:
         all_decoded_labels = []
         # 这里因为tqdm 中包含 tqdm 所以，暂时采用logger方式
         # for text_batch in tqdm(dataloader, desc='evaluation stage ...'):
-        for text_batch in dataloader:
-            with torch.no_grad():
-                input_ids, labels = text_batch
-                input_ids, labels = input_ids.to(
-                    self.config.get_device()), labels.to(self.config.get_device())
-
-                # forward on dev/test data
-                # add .module for multi-GPU
-            #  Output: Seq2SeqLMOutput = self.model(
-            #         input_ids=input_ids)
-
-            #     generated_tokens = torch.argmax(Output.logits, dim=2)
-            #     generated_tokens = generated_tokens.detach().cpu().numpy()
-            #     labels = labels.detach().cpu().numpy()  
-                if self.config.is_use_DDP is True:
-                    max_token = input_ids.shape[1]
-                    generated_tokens: Seq2SeqLMOutput = self.model.module.generate(
-                        input_ids=input_ids, max_length=max_token)
-                elif self.config.is_use_DP is True:
-                    max_token = input_ids.shape[1]
-                    generated_tokens: Seq2SeqLMOutput = self.model.module.generate(
-                        input_ids=input_ids, max_length=max_token)
-                else:
+        with self.model.knn_memories_context(batch_size = self.config.dev_batch_size, mode='dev') as knn_memories: 
+            for text_batch in dataloader:
+                with torch.no_grad():
+                    input_ids, labels = text_batch
+                    input_ids, labels = input_ids.to(
+                        self.config.get_device()), labels.to(self.config.get_device())
+                    
                     max_token = input_ids.shape[1]
                     generated_tokens: Seq2SeqLMOutput = self.model.generate(
-                        input_ids=input_ids, max_length=max_token)
+                        input_ids=input_ids, max_length=max_token, decoder_knn_memories = knn_memories)
                     
+                    generated_tokens = generated_tokens.detach().cpu().numpy()
+                    labels = labels.detach().cpu().numpy() 
 
-                generated_tokens = generated_tokens.detach().cpu().numpy()
-                labels = labels.detach().cpu().numpy() 
+                    decoded_preds = self.text_tokenizer.batch_decode(
+                        generated_tokens, skip_special_tokens=True)
+                    decoded_labels = self.text_tokenizer.batch_decode(
+                        labels, skip_special_tokens=True)
+                    if self.config.language == 'en':
+                        decoded_preds = [decoded_pred for decoded_pred in decoded_preds]
+                        decoded_labels = [decoded_label for decoded_label in decoded_labels]
+                    else:
+                        decoded_preds = [decoded_pred.replace(' ','') for decoded_pred in decoded_preds]
+                        decoded_labels = [decoded_label.replace(' ','') for decoded_label in decoded_labels]
 
-                decoded_preds = self.text_tokenizer.batch_decode(
-                    generated_tokens, skip_special_tokens=True)
-                decoded_labels = self.text_tokenizer.batch_decode(
-                    labels, skip_special_tokens=True)
-                if self.config.language == 'en':
-                    decoded_preds = [decoded_pred for decoded_pred in decoded_preds]
-                    decoded_labels = [decoded_label for decoded_label in decoded_labels]
-                else:
-                    decoded_preds = [decoded_pred.replace(' ','') for decoded_pred in decoded_preds]
-                    decoded_labels = [decoded_label.replace(' ','') for decoded_label in decoded_labels]
-
-                all_decoded_preds = all_decoded_preds + decoded_preds
-                all_decoded_labels = all_decoded_labels + decoded_labels
+                    all_decoded_preds = all_decoded_preds + decoded_preds
+                    all_decoded_labels = all_decoded_labels + decoded_labels
 
         metric_score = self.metric.compute(
             predictions=all_decoded_preds, references=all_decoded_labels)
@@ -500,7 +495,7 @@ class Trainer:
             logger.info('start training ...')
             logger.info(f'  num example = {len(self.train_dataloader)}')
             logger.info(f'  num epochs = {self.config.epochs}')
-            logger.info(f'   Total train batch size (w. parallel, distributed & accumulation) = {self.config.batch_size * self.config.gradient_accumulation_steps}' )
+            logger.info(f'   Total train batch size (w. parallel, distributed & accumulation) = {self.config.train_batch_size * self.config.gradient_accumulation_steps}' )
             logger.info(f"  Gradient Accumulation steps = {self.config.gradient_accumulation_steps}")
             logger.info(f'  total optimization step = {self.config.max_train_steps}')
 
@@ -570,64 +565,52 @@ class Trainer:
         all_decoded_preds = []
         all_decoded_labels = []
 
-        for text_batch in dataloader:
-            with torch.no_grad():
-                input_ids, labels = text_batch
-                input_ids, labels = input_ids.to(
-                    self.config.get_device()), labels.to(self.config.get_device())
-
-                # forward on dev/test data
-                # add .module for multi-GPU
-            #  Output: Seq2SeqLMOutput = self.model(
-            #         input_ids=input_ids)
-
-            #     generated_tokens = torch.argmax(Output.logits, dim=2)
-            #     generated_tokens = generated_tokens.detach().cpu().numpy()
-            #     labels = labels.detach().cpu().numpy()  
-                if self.config.is_use_DDP is True:
-                    max_token = input_ids.shape[1]
-                    generated_tokens: Seq2SeqLMOutput = self.model.module.generate(
-                        input_ids=input_ids, max_length=max_token)
-                else:
+        with self.model.knn_memories_context(batch_size = self.config.test_batch_size, mode='test') as knn_memories: 
+            for text_batch in dataloader:
+                with torch.no_grad():
+                    input_ids, labels = text_batch
+                    input_ids, labels = input_ids.to(
+                        self.config.get_device()), labels.to(self.config.get_device())
+                    
                     max_token = input_ids.shape[1]
                     generated_tokens: Seq2SeqLMOutput = self.model.generate(
-                        input_ids=input_ids, max_length=max_token)
-
-                generated_tokens = generated_tokens.detach().cpu().numpy()
-                labels = labels.detach().cpu().numpy() 
-                
-                if FLAG is not None:
-                    pass
-                else:
-                    decoded_inputs = self.text_tokenizer.batch_decode(
-                        input_ids, skip_special_tokens=True)
-                
-                decoded_preds = self.text_tokenizer.batch_decode(
-                    generated_tokens, skip_special_tokens=True)
-                decoded_labels = self.text_tokenizer.batch_decode(
-                    labels, skip_special_tokens=True)
-
-                if self.config.language == 'en':
+                        input_ids=input_ids, max_length=max_token, decoder_knn_memories = knn_memories)
+                    
+                    generated_tokens = generated_tokens.detach().cpu().numpy()
+                    labels = labels.detach().cpu().numpy() 
+             
                     if FLAG is not None:
                         pass
                     else:
-                        decoded_inputs = [decoded_input for decoded_input in decoded_inputs]
-                    decoded_preds = [decoded_pred for decoded_pred in decoded_preds]
-                    decoded_labels = [decoded_label for decoded_label in decoded_labels]
-                else:
+                        decoded_inputs = self.text_tokenizer.batch_decode(
+                            input_ids, skip_special_tokens=True)
+                    
+                    decoded_preds = self.text_tokenizer.batch_decode(
+                        generated_tokens, skip_special_tokens=True)
+                    decoded_labels = self.text_tokenizer.batch_decode(
+                        labels, skip_special_tokens=True)
+
+                    if self.config.language == 'en':
+                        if FLAG is not None:
+                            pass
+                        else:
+                            decoded_inputs = [decoded_input for decoded_input in decoded_inputs]
+                        decoded_preds = [decoded_pred for decoded_pred in decoded_preds]
+                        decoded_labels = [decoded_label for decoded_label in decoded_labels]
+                    else:
+                        if FLAG is not None:
+                            pass
+                        else:
+                            decoded_inputs = [decoded_input.replace(' ','') for decoded_input in decoded_inputs]
+                        decoded_preds = [decoded_pred.replace(' ','') for decoded_pred in decoded_preds]
+                        decoded_labels = [decoded_label.replace(' ','') for decoded_label in decoded_labels]
                     if FLAG is not None:
                         pass
                     else:
-                        decoded_inputs = [decoded_input.replace(' ','') for decoded_input in decoded_inputs]
-                    decoded_preds = [decoded_pred.replace(' ','') for decoded_pred in decoded_preds]
-                    decoded_labels = [decoded_label.replace(' ','') for decoded_label in decoded_labels]
-                if FLAG is not None:
-                    pass
-                else:
-                    all_decoded_inputs = all_decoded_inputs + decoded_inputs
-                
-                all_decoded_preds = all_decoded_preds + decoded_preds
-                all_decoded_labels = all_decoded_labels + decoded_labels
+                        all_decoded_inputs = all_decoded_inputs + decoded_inputs
+                    
+                    all_decoded_preds = all_decoded_preds + decoded_preds
+                    all_decoded_labels = all_decoded_labels + decoded_labels
         if FLAG is not None:
             pass
         else:
@@ -687,10 +670,17 @@ def set_my_seed(seed):
     
 def reset_config_parse(config):
     # 讲 config 中所有 由 if修改的变量 和 由其他变量定义的变量 在该函数内重新定义。
-    if config.is_pretrained is True:
-        config.model_type = 'pretrained-'
-    config.model_type = config.model_type + 'T-model'
+    # if config.is_pretrained is True:
+        # config.model_type = 'pretrained-'
+    if config.is_use_knn:
+        if config.is_from_ckpt:
+            config.model_type = config.model_type + 'T-model-knn-ckpt'  
+        else:
+            config.model_type = config.model_type + 'T-model-knn'
+    else:
+        config.model_type = config.model_type + 'T-model-baseline'
 
+    
     config.mode_mode_path: str = config.pwd + config.model_type
     config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.current_dataset
     
@@ -708,6 +698,11 @@ def reset_config_parse(config):
     config.audio_feature_path: str = config.text_data_dir +'/' + config.current_dataset +'/audio-feature/wav2vec_feature.h5'
 
     config.pretrained_model: str = config.pwd + 'pretrained-model/'+ config.language+'/BART'
+    if config.is_use_knn:
+        if config.is_from_ckpt:
+            config.pretrained_model: str = config.pwd + 'pretrained-model/checkpoint/'+ config.current_dataset
+        else:
+            config.pretrained_model: str = config.pwd + 'pretrained-model/'+ config.language+'/KNN_BART'
     config.phoneme_model_path: str = config.pwd + 'pretrained-model/'+ config.language+'/phoneme_model'
 
     if config.language == 'en':
@@ -749,11 +744,11 @@ if __name__ == "__main__":
         pass
     else:
         os.makedirs(config.mode_mode_path_dataset)
-        
+
     if config.is_pretrained==True:
         MODEL_TYPE = BartForContextCorretion.from_pretrained(config.pretrained_model)
     else:
-        MODEL_TYPE = BartForContextCorretion.from_config(config.Model_config)
+        MODEL_TYPE = BartForContextCorretion(config.Model_config)
 
     trainer = Trainer(
         config,
@@ -761,7 +756,8 @@ if __name__ == "__main__":
             config.text_data_dir, config),
         text_tokenizer=BertTokenizer.from_pretrained(config.pretrained_model),
         model=MODEL_TYPE,
-        metric=load_metric(config.metric)
+        metric=load_metric(config.metric),
+        is_use_knn=config.is_use_knn,
     )
     if config.mode == 'train':
         logger.add(os.path.join(config.log_path, 'train.'+config.current_dataset+'.T-model-log.txt'))

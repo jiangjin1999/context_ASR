@@ -23,6 +23,8 @@ import torch
 import torch.utils.checkpoint
 from torch import nn
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
+import torch.nn.functional as F
+from torch import nn, einsum
 
 from transformers.activations import ACT2FN
 from transformers.modeling_outputs import (
@@ -44,6 +46,12 @@ from transformers.utils import (
     replace_return_docstrings,
 )
 from transformers.models.bart.configuration_bart import BartConfig
+# KNN Code package:
+from .knn_memory import KNNMemoryList, DEFAULT_KNN_MEMORY_MEMMAP_DIRECTORY
+from contextlib import contextmanager
+from pathlib import Path
+from filelock import FileLock
+from einops import rearrange, repeat
 
 
 logger = logging.get_logger(__name__)
@@ -51,6 +59,16 @@ logger = logging.get_logger(__name__)
 _CHECKPOINT_FOR_DOC = "facebook/bart-base"
 _CONFIG_FOR_DOC = "BartConfig"
 _TOKENIZER_FOR_DOC = "BartTokenizer"
+
+# KNN Code:
+knn_memorizing_layers = (4, 5)
+_num_retrieved_memories_K = 32
+knn_memories_directory = '.tmp/knn.memories/'
+max_knn_memories = 7680
+dim_head = 64
+depth: int = 6 # transfromer block的个数
+
+# KNN_MEMO
 
 # Base model docstring
 _EXPECTED_OUTPUT_SHAPE = [1, 8, 768]
@@ -71,6 +89,17 @@ BART_PRETRAINED_MODEL_ARCHIVE_LIST = [
     # see all BART models at https://huggingface.co/models?filter=bart
 ]
 
+# helper functions
+def exists(val):
+    return val is not None
+def l2norm(t):
+    return F.normalize(t, dim = -1)
+def cast_tuple(val, length = 1):
+    return val if isinstance(val, tuple) else ((val,) * length)
+def unique(arr):
+    return list({el: True for el in arr}.keys())
+def default(val, d):
+    return val if exists(val) else d
 
 def shift_tokens_right(input_ids: torch.Tensor, pad_token_id: int, decoder_start_token_id: int):
     """
@@ -208,8 +237,9 @@ class BartAttention(nn.Module):
             value_states = torch.cat([past_key_value[1], value_states], dim=2)
         else:
             # self_attention
-            key_states = self._shape(self.k_proj(hidden_states), -1, bsz)
+            key_states = self._shape(self.k_proj(hidden_states), -1, bsz) # torch.Size([4, 40, 768])-->torch.Size([4, 12, 40, 64])
             value_states = self._shape(self.v_proj(hidden_states), -1, bsz)
+
 
         if self.is_decoder:
             # if cross_attention save Tuple(torch.Tensor, torch.Tensor) of all cross attention key/value_states.
@@ -221,9 +251,9 @@ class BartAttention(nn.Module):
             # if encoder bi-directional self-attention `past_key_value` is always `None`
             past_key_value = (key_states, value_states)
 
-        proj_shape = (bsz * self.num_heads, -1, self.head_dim)
-        query_states = self._shape(query_states, tgt_len, bsz).view(*proj_shape)
-        key_states = key_states.view(*proj_shape)
+        proj_shape = (bsz * self.num_heads, -1, self.head_dim) # (48, -1, 64)
+        query_states = self._shape(query_states, tgt_len, bsz).view(*proj_shape) # torch.Size([4, 40, 768])--> torch.Size([48, 40, 64])
+        key_states = key_states.view(*proj_shape) # torch.Size([48, 40, 64])
         value_states = value_states.view(*proj_shape)
 
         src_len = key_states.size(1)
@@ -235,15 +265,15 @@ class BartAttention(nn.Module):
                 f" {attn_weights.size()}"
             )
 
-        if attention_mask is not None:
+        if attention_mask is not None: # 若attention mask 存在，为0 或 极小值
             if attention_mask.size() != (bsz, 1, tgt_len, src_len):
                 raise ValueError(
                     f"Attention mask should be of size {(bsz, 1, tgt_len, src_len)}, but is {attention_mask.size()}"
                 )
-            attn_weights = attn_weights.view(bsz, self.num_heads, tgt_len, src_len) + attention_mask
-            attn_weights = attn_weights.view(bsz * self.num_heads, tgt_len, src_len)
+            attn_weights = attn_weights.view(bsz, self.num_heads, tgt_len, src_len) + attention_mask # torch.Size([4, 12, 40, 40])
+            attn_weights = attn_weights.view(bsz * self.num_heads, tgt_len, src_len) # torch.Size([48, 40, 40])
 
-        attn_weights = nn.functional.softmax(attn_weights, dim=-1)
+        attn_weights = nn.functional.softmax(attn_weights, dim=-1) # torch.Size([48, 40, 40])
 
         if layer_head_mask is not None:
             if layer_head_mask.size() != (self.num_heads,):
@@ -266,7 +296,238 @@ class BartAttention(nn.Module):
 
         attn_probs = nn.functional.dropout(attn_weights, p=self.dropout, training=self.training)
 
-        attn_output = torch.bmm(attn_probs, value_states)
+        attn_output = torch.bmm(attn_probs, value_states) # torch.Size([48, 40, 64])
+        # torch.Size([48, 40, 40]) * torch.Size([48, 40, 64]) = torch.Size([48, 40, 64])
+        
+        if attn_output.size() != (bsz * self.num_heads, tgt_len, self.head_dim):
+            raise ValueError(
+                f"`attn_output` should be of size {(bsz, self.num_heads, tgt_len, self.head_dim)}, but is"
+                f" {attn_output.size()}"
+            )
+
+        attn_output = attn_output.view(bsz, self.num_heads, tgt_len, self.head_dim) # torch.Size([4, 12, 40, 64])
+        attn_output = attn_output.transpose(1, 2) #torch.Size([4, 40, 12, 64])
+
+        # Use the `embed_dim` from the config (stored in the class) rather than `hidden_state` because `attn_output` can be
+        # partitioned aross GPUs when using tensor-parallelism.
+        attn_output = attn_output.reshape(bsz, tgt_len, self.embed_dim) #torch.Size([4, 40, 768])
+
+        attn_output = self.out_proj(attn_output) 
+
+        return attn_output, attn_weights_reshaped, past_key_value
+
+class KNNBartAttention(nn.Module):
+    """Multi-headed attention from 'Attention Is All You Need' paper"""
+
+    def __init__(
+        self,
+        embed_dim: int,
+        num_heads: int,
+        dropout: float = 0.0,
+        is_decoder: bool = False,
+        bias: bool = True,
+        # KNN Code:
+        num_retrieved_memories_K = _num_retrieved_memories_K, # 32
+    ):
+        super().__init__()
+        self.embed_dim = embed_dim
+        self.num_heads = num_heads
+        self.dropout = dropout
+        self.head_dim = embed_dim // num_heads
+
+        if (self.head_dim * num_heads) != self.embed_dim:
+            raise ValueError(
+                f"embed_dim must be divisible by num_heads (got `embed_dim`: {self.embed_dim}"
+                f" and `num_heads`: {num_heads})."
+            )
+        self.scaling = self.head_dim**-0.5
+        self.is_decoder = is_decoder
+        
+        # KNN Code:
+        self.num_retrieved_memories_K = num_retrieved_memories_K
+
+        self.k_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
+        self.v_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
+        self.q_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
+        self.out_proj = nn.Linear(embed_dim, embed_dim, bias=bias)
+
+    def _shape(self, tensor: torch.Tensor, seq_len: int, bsz: int):
+        return tensor.view(bsz, seq_len, self.num_heads, self.head_dim).transpose(1, 2).contiguous()
+
+    def forward(
+        self,
+        hidden_states: torch.Tensor,
+        key_value_states: Optional[torch.Tensor] = None,
+        past_key_value: Optional[Tuple[torch.Tensor]] = None,
+        attention_mask: Optional[torch.Tensor] = None,
+        layer_head_mask: Optional[torch.Tensor] = None,
+        output_attentions: bool = False,
+        knn_memory = None,
+        add_knn_memory = True,
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
+        """Input shape: Batch x Time x Channel"""
+        "KNN attention 不进行cross attention"
+
+        # if key_value_states are provided this layer is used as a cross-attention layer
+        # for the decoder
+        is_cross_attention = key_value_states is not None
+
+        bsz, tgt_len, _ = hidden_states.size()
+
+        # get query proj
+        query_states = self.q_proj(hidden_states) * self.scaling
+        # query_states.shape: torch.Size([8, 40, 768])
+
+        # elif past_key_value is not None:
+            # reuse k, v, self_attention
+        key_states = self._shape(self.k_proj(hidden_states), -1, bsz)
+        value_states = self._shape(self.v_proj(hidden_states), -1, bsz)
+        # key_states.shape: torch.Size([8, 12, 40, 64])
+        # value_states.shape: torch.Size([8, 12, 40, 64])
+        
+        KNN = True
+        if KNN is True:
+            # KNN Code:
+            # calculate knn attention over memory, if index is passed in
+            KNN_query_states = rearrange(query_states, 'b n (h d) -> b h n d', h = key_states.shape[1])
+            # torch.Size([8, 40, 768]) -->torch.Size([8, 12, 40, 64])
+            KNN_query_states, key_states = map(l2norm, (KNN_query_states, key_states))
+            query_states = rearrange(KNN_query_states, ' b h n d -> b n (h d)')
+            if knn_memory.num_indices != KNN_query_states.shape[0]:
+                beam_num = int(KNN_query_states.shape[0] / knn_memory.num_indices)
+                # 此处代码未适应参数beam_num, 后续可修改-->已经修改
+                # beam_query_list = [item for item in KNN_query_states.chunk(int(beam_num), dim=0)]
+                beam_query_list = [KNN_query_states[i::int(beam_num),:,:,:] for i in range(int(beam_num))]
+                # beam_memory_keyvalue_list = []
+                # beam_memory_attention_mask_list = []
+                # for item in beam_query_list:
+                #     beam_memory_keyvalue, beam_memory_attention_mask = knn_memory.search(item, self.num_retrieved_memories_K)
+                #     beam_memory_keyvalue_list.append(beam_memory_keyvalue)
+                #     beam_memory_attention_mask_list.append(beam_memory_attention_mask)
+                # beam_memory_keyvalue_list = [knn_memory.search(item, self.num_retrieved_memories_K)[0] for item in beam_query_list]
+                # beam_memory_attention_mask_list = [knn_memory.search(item, self.num_retrieved_memories_K)[1] for item in beam_query_list]
+                
+                # decode 速度太慢了，考虑只search 一个 在beam search 时候。
+                beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
+                beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
+                memory_keyvalue = torch.cat(beam_memory_keyvalue_list, dim=0)
+                memory_attention_mask = torch.cat(beam_memory_attention_mask_list, dim=0)
+            else:
+                memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
+            # query_states.shape: torch.Size([8, 40, 768])
+            # knn.shape: (8, 7680, 2, 64)
+            # memory_keyvalue.shape: torch.Size([8, 40, 32, 2, 768])
+            # memory_attention_mask.shape: torch.Size([8, 40, 32])
+            
+            memory_key, memory_value = memory_keyvalue.unbind(dim = -2)
+            
+            # KNN Code Part:
+            KNN_key_states = torch.mean(key_states, dim=1, keepdim=False) # torch.Size([8, 12, 40, 64])--> torch.Size([8, 40, 64])
+            KNN_value_states = torch.mean(value_states, dim=1, keepdim=False)
+            # add memories to be discarded into KNN memory
+            if knn_memory.num_indices != KNN_key_states.shape[0]:
+                beam_num = int(KNN_key_states.shape[0] / knn_memory.num_indices)
+                # beam_key_list = [item for item in KNN_key_states.chunk(int(beam_num), dim=0)]
+                # beam_value_list = [item for item in KNN_value_states.chunk(int(beam_num), dim=0)]
+                beam_key_list = [KNN_key_states[i::int(beam_num),:,:] for i in range(int(beam_num))]
+                beam_value_list = [KNN_value_states[i::int(beam_num),:,:] for i in range(int(beam_num))]
+                beam_new_kv_memories_list = [torch.stack((beam_key, beam_value), dim = -2).detach()  for beam_key, beam_value in zip(beam_key_list, beam_value_list) ]
+                if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0:
+                    knn_memory.add(beam_new_kv_memories_list[0])
+                # [knn_memory.add(beam_new_kv_memories_item) for beam_new_kv_memories_item in beam_new_kv_memories_list if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0]
+                # if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0:
+                #     knn_memory.add(beam_new_kv_memories_list)
+                # for beam_key, beam_value in zip(beam_key_list, beam_value_list):
+                #     beam_new_kv_memories = torch.stack((beam_key, beam_value), dim = -2).detach()
+                #     if add_knn_memory and beam_new_kv_memories.numel() > 0:
+                #         knn_memory.add(beam_new_kv_memories)
+                
+            else:
+                new_kv_memories = torch.stack((KNN_key_states, KNN_value_states), dim = -2).detach()
+
+                if add_knn_memory and new_kv_memories.numel() > 0:
+                    knn_memory.add(new_kv_memories)
+                
+            # KNN Code PART:
+            # knn_memory_attn_weights = torch.bmm(query_states, KNN_memory_key.transpose(1, 2))
+            knn_memory_attn_weights = einsum('b h i d, b h i j d -> b h i j', KNN_query_states, memory_key)
+            mask_value = -torch.finfo(knn_memory_attn_weights.dtype).max
+            knn_memory_attn_weights = knn_memory_attn_weights.masked_fill(~memory_attention_mask, mask_value)
+            # torch.Size([8, 12, 40, 32])
+            knn_memory_attn_weights = rearrange(knn_memory_attn_weights, ' b h n d -> (b h) n d ')
+            # torch.Size([96, 40, 32])
+            # if memory_attention_mask is not None:
+            #     if memory_attention_mask.size() != (bsz, 1, tgt_len, src_len):
+            #         raise ValueError(
+            #             f"Attention mask should be of size {(bsz, 1, tgt_len, src_len)}, but is {attention_mask.size()}"
+            #         )
+            #     knn_memory_attn_weights = knn_memory_attn_weights.view(bsz, self.num_heads, tgt_len, src_len) + memory_attention_mask
+            #     knn_memory_attn_weights = knn_memory_attn_weights.view(bsz * self.num_heads, tgt_len, src_len)
+                
+            
+
+
+        
+        if self.is_decoder:
+            past_key_value = (key_states, value_states)
+
+        proj_shape = (bsz * self.num_heads, -1, self.head_dim)
+        query_states = self._shape(query_states, tgt_len, bsz).view(*proj_shape)
+        key_states = key_states.view(*proj_shape)
+        value_states = value_states.view(*proj_shape)
+
+        src_len = key_states.size(1)
+        attn_weights = torch.bmm(query_states, key_states.transpose(1, 2)) 
+        # query.shape: torch.Size([96, 40, 64])| key_states.transpose(1, 2).shape: torch.Size([96, 64, 40])
+
+
+        if attention_mask is not None:
+            if attention_mask.size() != (bsz, 1, tgt_len, src_len):
+                raise ValueError(
+                    f"Attention mask should be of size {(bsz, 1, tgt_len, src_len)}, but is {attention_mask.size()}"
+                )
+            attn_weights = attn_weights.view(bsz, self.num_heads, tgt_len, src_len) + attention_mask
+            attn_weights = attn_weights.view(bsz * self.num_heads, tgt_len, src_len)
+            # torch.Size([96, 40, 40])
+            
+        # KNN Code:
+        attn_weights = torch.cat((knn_memory_attn_weights, attn_weights), dim=-1)
+        
+        attn_weights = nn.functional.softmax(attn_weights, dim=-1)
+        # torch.Size([96, 40, 72])
+        if layer_head_mask is not None:
+            if layer_head_mask.size() != (self.num_heads,):
+                raise ValueError(
+                    f"Head mask for a single layer should be of size {(self.num_heads,)}, but is"
+                    f" {layer_head_mask.size()}"
+                )
+            attn_weights = layer_head_mask.view(1, -1, 1, 1) * attn_weights.view(bsz, self.num_heads, tgt_len, src_len)
+            attn_weights = attn_weights.view(bsz * self.num_heads, tgt_len, src_len)
+
+        if output_attentions:
+            # this operation is a bit awkward, but it's required to
+            # make sure that attn_weights keeps its gradient.
+            # In order to do so, attn_weights have to be reshaped
+            # twice and have to be reused in the following
+            attn_weights_reshaped = attn_weights.view(bsz, self.num_heads, tgt_len, src_len)
+            attn_weights = attn_weights_reshaped.view(bsz * self.num_heads, tgt_len, src_len)
+        else:
+            attn_weights_reshaped = None
+
+        attn_probs = nn.functional.dropout(attn_weights, p=self.dropout, training=self.training)
+        
+        local_attn_probs, memory_attn_probs = attn_probs[..., self.num_retrieved_memories_K:], attn_probs[..., :self.num_retrieved_memories_K]
+        # torch.Size([96, 40, 40]) torch.Size([96, 40, 32])
+        local_attn_output = torch.bmm(local_attn_probs, value_states)
+        # torch.Size([96, 40, 64]) = torch.Size([96, 40, 40]) * torch.Size([96, 40, 64])
+        KNN_memory_value_states = rearrange(memory_value, ' b h n d k -> (b h) n d k')
+        # torch.Size([8, 12, 40, 32, 64]) --> 
+        # memory_attn_output = torch.bmm(memory_attn_probs, KNN_memory_value_states)
+        memory_attn_output = einsum('b i j, b i j d -> b i d', memory_attn_probs, KNN_memory_value_states)
+        # torch.Size([96, 40, 32]) * torch.Size([96, 40, 32, 64]) = torch.Size([96, 40, 64])
+        
+        attn_output = local_attn_output + memory_attn_output
+        # attn_output = torch.bmm(attn_probs, value_states)
 
         if attn_output.size() != (bsz * self.num_heads, tgt_len, self.head_dim):
             raise ValueError(
@@ -376,6 +637,7 @@ class BartDecoderLayer(nn.Module):
             dropout=config.attention_dropout,
             is_decoder=True,
         )
+        
         self.encoder_attn_layer_norm = nn.LayerNorm(self.embed_dim)
         self.fc1 = nn.Linear(self.embed_dim, config.decoder_ffn_dim)
         self.fc2 = nn.Linear(config.decoder_ffn_dim, self.embed_dim)
@@ -392,6 +654,139 @@ class BartDecoderLayer(nn.Module):
         past_key_value: Optional[Tuple[torch.Tensor]] = None,
         output_attentions: Optional[bool] = False,
         use_cache: Optional[bool] = True,
+        rel_pos_bias: Optional[Tuple[torch.Tensor]] = None,
+        knn_memory = None,
+        add_knn_memory: Optional[bool] = True,
+    ) -> Tuple[torch.FloatTensor, Optional[Tuple[torch.FloatTensor, torch.FloatTensor]]]:
+        """
+        Args:
+            hidden_states (`torch.FloatTensor`): input to the layer of shape `(batch, seq_len, embed_dim)`
+            attention_mask (`torch.FloatTensor`): attention mask of size
+                `(batch, 1, tgt_len, src_len)` where padding elements are indicated by very large negative values.
+            encoder_hidden_states (`torch.FloatTensor`):
+                cross attention input to the layer of shape `(batch, seq_len, embed_dim)`
+            encoder_attention_mask (`torch.FloatTensor`): encoder attention mask of size
+                `(batch, 1, tgt_len, src_len)` where padding elements are indicated by very large negative values.
+            layer_head_mask (`torch.FloatTensor`): mask for attention heads in a given layer of size
+                `(encoder_attention_heads,)`.
+            cross_attn_layer_head_mask (`torch.FloatTensor`): mask for cross-attention heads in a given layer of
+                size `(decoder_attention_heads,)`.
+            past_key_value (`Tuple(torch.FloatTensor)`): cached past key and value projection states
+            output_attentions (`bool`, *optional*):
+                Whether or not to return the attentions tensors of all attention layers. See `attentions` under
+                returned tensors for more detail.
+        """
+        residual = hidden_states # 上一层的输出
+        
+        # Self Attention
+        # decoder uni-directional self-attention cached key/values tuple is at positions 1,2
+        self_attn_past_key_value = past_key_value[:2] if past_key_value is not None else None
+        # add present self-attn cache to positions 1,2 of present_key_value tuple
+        hidden_states, self_attn_weights, present_key_value = self.self_attn(
+            hidden_states=hidden_states, # torch.Size([4, 40, 768])
+            past_key_value=self_attn_past_key_value,
+            attention_mask=attention_mask, # torch.Size([4, 1, 40, 40])
+            layer_head_mask=layer_head_mask, # None
+            output_attentions=output_attentions,
+        )
+        hidden_states = nn.functional.dropout(hidden_states, p=self.dropout, training=self.training)
+        hidden_states = residual + hidden_states
+        hidden_states = self.self_attn_layer_norm(hidden_states)
+
+        # Cross-Attention Block
+        cross_attn_present_key_value = None
+        cross_attn_weights = None
+        if encoder_hidden_states is not None:
+            residual = hidden_states
+
+            # cross_attn cached key/values tuple is at positions 3,4 of present_key_value tuple
+            cross_attn_past_key_value = past_key_value[-2:] if past_key_value is not None else None
+            hidden_states, cross_attn_weights, cross_attn_present_key_value = self.encoder_attn(
+                hidden_states=hidden_states,
+                key_value_states=encoder_hidden_states,
+                attention_mask=encoder_attention_mask,
+                layer_head_mask=cross_attn_layer_head_mask, #None
+                past_key_value=cross_attn_past_key_value,
+                output_attentions=output_attentions,
+            )
+            hidden_states = nn.functional.dropout(hidden_states, p=self.dropout, training=self.training)
+            hidden_states = residual + hidden_states
+            hidden_states = self.encoder_attn_layer_norm(hidden_states)
+
+            # add cross-attn to positions 3,4 of present_key_value tuple
+            present_key_value = present_key_value + cross_attn_present_key_value
+
+        # Fully Connected
+        residual = hidden_states
+        hidden_states = self.activation_fn(self.fc1(hidden_states))
+        hidden_states = nn.functional.dropout(hidden_states, p=self.activation_dropout, training=self.training)
+        hidden_states = self.fc2(hidden_states)
+        hidden_states = nn.functional.dropout(hidden_states, p=self.dropout, training=self.training)
+        hidden_states = residual + hidden_states
+        hidden_states = self.final_layer_norm(hidden_states)
+
+        outputs = (hidden_states,)
+
+        if output_attentions:
+            outputs += (self_attn_weights, cross_attn_weights)
+
+        if use_cache:
+            outputs += (present_key_value,)
+
+        return outputs
+
+
+
+class KNNBartDecoderLayer(nn.Module):
+    def __init__(self, config: BartConfig):
+        super().__init__()
+        self.embed_dim = config.d_model
+
+        # self.self_attn = BartAttention(
+        #     embed_dim=self.embed_dim,
+        #     num_heads=config.decoder_attention_heads,
+        #     dropout=config.attention_dropout,
+        #     is_decoder=True,
+        # )
+        # KNN Attention
+        self.knn_attn = KNNBartAttention(
+            embed_dim=self.embed_dim,
+            num_heads=config.decoder_attention_heads,
+            dropout=config.attention_dropout,
+            is_decoder=True,
+        )
+        
+        self.dropout = config.dropout
+        self.activation_fn = ACT2FN[config.activation_function]
+        self.activation_dropout = config.activation_dropout
+
+        self.self_attn_layer_norm = nn.LayerNorm(self.embed_dim)
+        self.encoder_attn = BartAttention(
+            self.embed_dim,
+            config.decoder_attention_heads,
+            dropout=config.attention_dropout,
+            is_decoder=True,
+        )
+        
+        # add Knn
+        self.encoder_attn_layer_norm = nn.LayerNorm(self.embed_dim)
+        self.fc1 = nn.Linear(self.embed_dim, config.decoder_ffn_dim)
+        self.fc2 = nn.Linear(config.decoder_ffn_dim, self.embed_dim)
+        self.final_layer_norm = nn.LayerNorm(self.embed_dim)
+
+    def forward(
+        self,
+        hidden_states: torch.Tensor,
+        attention_mask: Optional[torch.Tensor] = None,
+        encoder_hidden_states: Optional[torch.Tensor] = None,
+        encoder_attention_mask: Optional[torch.Tensor] = None,
+        layer_head_mask: Optional[torch.Tensor] = None,
+        cross_attn_layer_head_mask: Optional[torch.Tensor] = None,
+        past_key_value: Optional[Tuple[torch.Tensor]] = None,
+        output_attentions: Optional[bool] = False,
+        use_cache: Optional[bool] = True,
+        knn_memory = None,
+        add_knn_memory: Optional[bool] = True,
     ) -> Tuple[torch.FloatTensor, Optional[Tuple[torch.FloatTensor, torch.FloatTensor]]]:
         """
         Args:
@@ -417,12 +812,14 @@ class BartDecoderLayer(nn.Module):
         # decoder uni-directional self-attention cached key/values tuple is at positions 1,2
         self_attn_past_key_value = past_key_value[:2] if past_key_value is not None else None
         # add present self-attn cache to positions 1,2 of present_key_value tuple
-        hidden_states, self_attn_weights, present_key_value = self.self_attn(
+        hidden_states, self_attn_weights, present_key_value = self.knn_attn(
             hidden_states=hidden_states,
             past_key_value=self_attn_past_key_value,
             attention_mask=attention_mask,
             layer_head_mask=layer_head_mask,
             output_attentions=output_attentions,
+            knn_memory = knn_memory,
+            add_knn_memory = add_knn_memory,
         )
         hidden_states = nn.functional.dropout(hidden_states, p=self.dropout, training=self.training)
         hidden_states = residual + hidden_states
@@ -470,34 +867,9 @@ class BartDecoderLayer(nn.Module):
 
         return outputs
 
-
-    """Head for sentence-level classification tasks."""
-
-    def __init__(
-        self,
-        input_dim: int,
-        inner_dim: int,
-        num_classes: int,
-        pooler_dropout: float,
-    ):
-        super().__init__()
-        self.dense = nn.Linear(input_dim, inner_dim)
-        self.dropout = nn.Dropout(p=pooler_dropout)
-        self.out_proj = nn.Linear(inner_dim, num_classes)
-
-    def forward(self, hidden_states: torch.Tensor) -> torch.Tensor:
-        hidden_states = self.dropout(hidden_states)
-        hidden_states = self.dense(hidden_states)
-        hidden_states = torch.tanh(hidden_states)
-        hidden_states = self.dropout(hidden_states)
-        hidden_states = self.out_proj(hidden_states)
-        return hidden_states
-
-
 class BartPretrainedModel(PreTrainedModel):
     config_class = BartConfig
     base_model_prefix = "model"
-    supports_gradient_checkpointing = True
     _keys_to_ignore_on_load_unexpected = [r"encoder.version", r"decoder.version"]
 
     def _init_weights(self, module):
@@ -511,9 +883,7 @@ class BartPretrainedModel(PreTrainedModel):
             if module.padding_idx is not None:
                 module.weight.data[module.padding_idx].zero_()
 
-    def _set_gradient_checkpointing(self, module, value=False):
-        if isinstance(module, (BartDecoder, BartEncoder)):
-            module.gradient_checkpointing = value
+ 
 
     @property
     def dummy_inputs(self):
@@ -723,7 +1093,6 @@ class BartEncoder(BartPretrainedModel):
         self.layers = nn.ModuleList([BartEncoderLayer(config) for _ in range(config.encoder_layers)])
         self.layernorm_embedding = nn.LayerNorm(embed_dim)
 
-        self.gradient_checkpointing = False
         # Initialize weights and apply final processing
         self.post_init()
 
@@ -829,27 +1198,12 @@ class BartEncoder(BartPretrainedModel):
             if self.training and (dropout_probability < self.layerdrop):  # skip the layer
                 layer_outputs = (None, None)
             else:
-                if self.gradient_checkpointing and self.training:
-
-                    def create_custom_forward(module):
-                        def custom_forward(*inputs):
-                            return module(*inputs, output_attentions)
-
-                        return custom_forward
-
-                    layer_outputs = torch.utils.checkpoint.checkpoint(
-                        create_custom_forward(encoder_layer),
-                        hidden_states,
-                        attention_mask,
-                        (head_mask[idx] if head_mask is not None else None),
-                    )
-                else:
-                    layer_outputs = encoder_layer(
-                        hidden_states,
-                        attention_mask,
-                        layer_head_mask=(head_mask[idx] if head_mask is not None else None),
-                        output_attentions=output_attentions,
-                    )
+                layer_outputs = encoder_layer(
+                    hidden_states,
+                    attention_mask,
+                    layer_head_mask=(head_mask[idx] if head_mask is not None else None),
+                    output_attentions=output_attentions,
+                )
 
                 hidden_states = layer_outputs[0]
 
@@ -882,6 +1236,10 @@ class BartDecoder(BartPretrainedModel):
         self.padding_idx = config.pad_token_id
         self.max_target_positions = config.max_position_embeddings
         self.embed_scale = math.sqrt(config.d_model) if config.scale_embedding else 1.0
+        # add KNN code:
+        self.knn_memorizing_layers = cast_tuple(config.knn_memorizing_layers)
+        self.is_use_knn = config.is_use_knn
+
 
         if embed_tokens is not None:
             self.embed_tokens = embed_tokens
@@ -892,10 +1250,21 @@ class BartDecoder(BartPretrainedModel):
             config.max_position_embeddings,
             config.d_model,
         )
-        self.layers = nn.ModuleList([BartDecoderLayer(config) for _ in range(config.decoder_layers)])
+        # self.layers = nn.ModuleList([BartDecoderLayer(config) for _ in range(config.decoder_layers)])
+        self.layers = nn.ModuleList([])
+        for idx in range(config.decoder_layers):
+            layer_num = idx + 1
+            use_knn_attention = layer_num in self.knn_memorizing_layers
+            if use_knn_attention:
+                if self.is_use_knn:
+                    self.layers.append(KNNBartDecoderLayer(config))
+                else:
+                    self.layers.append(BartDecoderLayer(config))
+            else:
+                self.layers.append(BartDecoderLayer(config))
+                  
         self.layernorm_embedding = nn.LayerNorm(config.d_model)
 
-        self.gradient_checkpointing = False
         # Initialize weights and apply final processing
         self.post_init()
 
@@ -939,6 +1308,8 @@ class BartDecoder(BartPretrainedModel):
         output_attentions: Optional[bool] = None,
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
+        knn_memories = None,
+        add_knn_memory: Optional[bool] = True,
     ) -> Union[Tuple, BaseModelOutputWithPastAndCrossAttentions]:
         r"""
         Args:
@@ -951,7 +1322,7 @@ class BartDecoder(BartPretrainedModel):
 
                 [What are input IDs?](../glossary#input-ids)
             attention_mask (`torch.Tensor` of shape `(batch_size, sequence_length)`, *optional*):
-                Mask to avoid performing attention on padding token indices. Mask values selected in `[0, 1]`:
+                Mask to avoid   attention on padding token indices. Mask values selected in `[0, 1]`:
 
                 - 1 for tokens that are **not masked**,
                 - 0 for tokens that are **masked**.
@@ -1062,8 +1433,37 @@ class BartDecoder(BartPretrainedModel):
                         f"The `{mask_name}` should be specified for {len(self.layers)} layers, but it is for"
                         f" {head_mask.size()[0]}."
                     )
+                    
+        # KNN Code:
+        # validate KNN memories to have enough indices for batch size
+
+        
+        # if KNN memories are passed in, and researcher wants memories auto-cleared on <sos> token detection
+        # do the appropriate logic
+
+
+            
+        # iterate through the memories in order of the ascending layers that contain KNNAttention
+        if self.is_use_knn:
+            knn_memories_iter = iter(knn_memories)
+        rel_pos_bias = 'rel_pos_bias'#self.rel_pos_bias(seq_len, max_context_len, device = hidden_states.device)
+        knn_rel_pos_bias = 'rel_pos_bias'#self.knn_rel_pos_bias(seq_len, max_context_len, device = hidden_states.device)
 
         for idx, decoder_layer in enumerate(self.layers):
+            # KNN Code
+            layer_num = idx + 1
+            is_memorizing_layer = layer_num in self.knn_memorizing_layers
+            
+            attn_kwargs = dict(rel_pos_bias = rel_pos_bias if not is_memorizing_layer else knn_rel_pos_bias)
+            # attn_kwargs 
+            if is_memorizing_layer:
+                if self.is_use_knn: 
+                    attn_kwargs = {'knn_memory': next(knn_memories_iter), 'add_knn_memory': add_knn_memory}
+                else:
+                    attn_kwargs = {'knn_memory': None, 'add_knn_memory': add_knn_memory}
+                    
+
+            
             # add LayerDrop (see https://arxiv.org/abs/1909.11556 for description)
             if output_hidden_states:
                 all_hidden_states += (hidden_states,)
@@ -1073,46 +1473,20 @@ class BartDecoder(BartPretrainedModel):
 
             past_key_value = past_key_values[idx] if past_key_values is not None else None
 
-            if self.gradient_checkpointing and self.training:
-
-                if use_cache:
-                    logger.warning(
-                        "`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`..."
-                    )
-                    use_cache = False
-
-                def create_custom_forward(module):
-                    def custom_forward(*inputs):
-                        # None for past_key_value
-                        return module(*inputs, output_attentions, use_cache)
-
-                    return custom_forward
-
-                layer_outputs = torch.utils.checkpoint.checkpoint(
-                    create_custom_forward(decoder_layer),
-                    hidden_states,
-                    attention_mask,
-                    encoder_hidden_states,
-                    encoder_attention_mask,
-                    head_mask[idx] if head_mask is not None else None,
-                    cross_attn_head_mask[idx] if cross_attn_head_mask is not None else None,
-                    None,
-                )
-            else:
-
-                layer_outputs = decoder_layer(
-                    hidden_states,
-                    attention_mask=attention_mask,
-                    encoder_hidden_states=encoder_hidden_states,
-                    encoder_attention_mask=encoder_attention_mask,
-                    layer_head_mask=(head_mask[idx] if head_mask is not None else None),
-                    cross_attn_layer_head_mask=(
-                        cross_attn_head_mask[idx] if cross_attn_head_mask is not None else None
-                    ),
-                    past_key_value=past_key_value,
-                    output_attentions=output_attentions,
-                    use_cache=use_cache,
-                )
+            layer_outputs = decoder_layer(
+                hidden_states,
+                attention_mask=attention_mask,
+                encoder_hidden_states=encoder_hidden_states,
+                encoder_attention_mask=encoder_attention_mask,
+                layer_head_mask=(head_mask[idx] if head_mask is not None else None),
+                cross_attn_layer_head_mask=(
+                    cross_attn_head_mask[idx] if cross_attn_head_mask is not None else None
+                ),
+                past_key_value=past_key_value,
+                output_attentions=output_attentions,
+                use_cache=use_cache,
+                **attn_kwargs,
+            )
             hidden_states = layer_outputs[0]
 
             if use_cache:
@@ -1200,6 +1574,7 @@ class BartModel(BartPretrainedModel):
         output_attentions: Optional[bool] = None,
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
+        knn_memories = None,
     ) -> Union[Tuple, Seq2SeqModelOutput]:
 
         # different to other models, Bart automatically creates decoder_input_ids from
@@ -1255,6 +1630,7 @@ class BartModel(BartPretrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            knn_memories=knn_memories,
         )
 
         if not return_dict:
@@ -1279,7 +1655,12 @@ class BartForContextCorretion(BartPretrainedModel):
     base_model_prefix = "model"
     _keys_to_ignore_on_load_missing = [r"final_logits_bias", r"lm_head.weight"]
 
-    def __init__(self, config: BartConfig):
+    def __init__(
+        self, 
+        config: BartConfig,
+        # knn_memorizing_layers = None,
+        # knn_memories_directory = None,
+        ):
         super().__init__(config)
         self.model = BartModel(config)
         self.register_buffer("final_logits_bias", torch.zeros((1, self.model.shared.num_embeddings)))
@@ -1287,6 +1668,26 @@ class BartForContextCorretion(BartPretrainedModel):
 
         # Initialize weights and apply final processing
         self.post_init()
+        
+        # paras for KNN 
+        valid_layers = set(range(1, depth + 1))
+        knn_memorizing_layers = default(config.knn_memorizing_layers, (depth // 2,)) # 如果没有给memorizing_layers时，就是中间层。default KNN attention layer to midpoint of transformer
+        knn_memorizing_layers = cast_tuple(knn_memorizing_layers)
+        knn_memorizing_layers = tuple(filter(lambda i: i in valid_layers, knn_memorizing_layers))
+        
+        self.knn_memories_directory = knn_memories_directory
+        self.knn_memorizing_layers = unique(knn_memorizing_layers)
+        self.num_knn_memorizing_layers = len(knn_memorizing_layers)
+        self.max_knn_memories = max_knn_memories
+        self.dim_head = dim_head
+        self.knn_mem_kwargs = dict(
+            dim = self.dim_head,
+            max_memories = self.max_knn_memories,
+            multiprocessing = False
+        )
+        self.clear_memories_on_sos_token_id = None #clear_memories_on_sos_token_id
+        self.clear_memories_on_eos_token_id = None #clear_memories_on_eos_token_id
+        self.config  = config
 
     def get_encoder(self):
         return self.model.get_encoder()
@@ -1313,6 +1714,50 @@ class BartForContextCorretion(BartPretrainedModel):
 
     def set_output_embeddings(self, new_embeddings):
         self.lm_head = new_embeddings
+        
+    # KNN Code function:
+    def create_knn_memories(
+        self,
+        mode,
+        *,
+        batch_size
+    ):
+        return KNNMemoryList.create_memories(
+            mode=mode,
+            batch_size = batch_size,
+            num_memory_layers = self.num_knn_memorizing_layers,
+            memories_directory = self.knn_memories_directory,
+        )(**self.knn_mem_kwargs) # {'dim': 64, 'max_memories': 7680, 'multiprocessing': False}
+
+    @contextmanager
+    def knn_memories_context(
+        self,
+        mode,
+        **kwargs
+    ):  
+        
+        knn_dir = Path(self.knn_memories_directory)
+        knn_dir.mkdir(exist_ok = True, parents = True)
+        lock = FileLock(str(knn_dir / 'mutex'))
+
+        with lock:
+            knn_memories = self.create_knn_memories(mode, **kwargs)
+            yield knn_memories
+            knn_memories.cleanup()
+
+    def clear_memory(self, x, token_id):
+        """ clears the KNN memories based on if the batch row contains the specified token id """
+        """ for auto-clearing KNN memories based on start and end of strings """
+
+        clear_memory = (x == token_id).any(dim = -1)
+        batch_indices, _ = clear_memory.nonzero(as_tuple = True)
+        batch_indices_to_clear = batch_indices.tolist()
+
+        if len(batch_indices_to_clear) == 0:
+            return
+
+        knn_memories.clear_memory(batch_indices_to_clear)
+
 
     @add_start_docstrings_to_model_forward(BART_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=Seq2SeqLMOutput, config_class=_CONFIG_FOR_DOC)
@@ -1335,6 +1780,8 @@ class BartForContextCorretion(BartPretrainedModel):
         output_attentions: Optional[bool] = None,
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
+        # KNN Code:
+        decoder_knn_memories = None,
     ) -> Union[Tuple, Seq2SeqLMOutput]:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
@@ -1354,6 +1801,15 @@ class BartForContextCorretion(BartPretrainedModel):
                 decoder_input_ids = shift_tokens_right(
                     labels, self.config.pad_token_id, self.config.decoder_start_token_id
                 )
+        if input_ids is not None:
+            batch_size = input_ids.shape[0]
+        else:
+            batch_size = attention_mask.shape[0] / self.config.num_beams
+        if self.config.is_use_knn:                
+            assert all([memory.num_indices == batch_size for memory in decoder_knn_memories]), f'you passed in an input with batch size {input_ids.shape[0]} but your memories were not instantiated with that number of KNN indices'
+                    
+            if exists(self.clear_memories_on_sos_token_id):
+                self.clear_memory(inputs_embeds, self.clear_memories_on_sos_token_id)
 
         outputs = self.model(
             input_ids,
@@ -1371,6 +1827,8 @@ class BartForContextCorretion(BartPretrainedModel):
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
+            # KNN Code
+            knn_memories=decoder_knn_memories,
         )
         lm_logits = self.lm_head(outputs[0]) + self.final_logits_bias
 
@@ -1405,7 +1863,7 @@ class BartForContextCorretion(BartPretrainedModel):
         cross_attn_head_mask=None,
         use_cache=None,
         encoder_outputs=None,
-        **kwargs
+        **kwargs,
     ):
         # cut decoder_input_ids if past is used
         if past is not None:
@@ -1421,6 +1879,7 @@ class BartForContextCorretion(BartPretrainedModel):
             "decoder_head_mask": decoder_head_mask,
             "cross_attn_head_mask": cross_attn_head_mask,
             "use_cache": use_cache,  # change this to avoid caching (presumably for debugging)
+            "decoder_knn_memories": kwargs['decoder_knn_memories'],
         }
 
     def prepare_decoder_input_ids_from_labels(self, labels: torch.Tensor):

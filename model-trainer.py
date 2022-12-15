@@ -57,6 +57,7 @@ class Config(Tap):
     test_batch_size: int = 20
     is_use_knn: bool = False
     is_from_ckpt: bool = False
+    is_shuffle_knn: bool = False
     SEGMENTS: int = 1 #一个subsequence包含几个句子
     max_seq_length: int = 40 # 一个句子的max length 是
     
@@ -117,7 +118,7 @@ class Config(Tap):
     num_batch_per_evaluation: int = 10
 
     # 模型相关 参数配置
-    early_stop = EarlyStopping(patience=7)
+    early_stop = EarlyStopping(patience=5)
     device: str = 'cuda'
     metric: str = 'cer'
     if language == 'en': metric = 'wer'
@@ -677,9 +678,14 @@ def reset_config_parse(config):
             config.model_type = config.model_type + 'T-model-knn-ckpt'  
         else:
             config.model_type = config.model_type + 'T-model-knn'
+        if config.is_shuffle_knn:
+            config.model_type = config.model_type + '-shuffle'
     else:
         config.model_type = config.model_type + 'T-model-baseline'
-
+    
+        
+    if config.is_use_knn is not None:
+        config.shuffle = True
     
     config.mode_mode_path: str = config.pwd + config.model_type
     config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.current_dataset

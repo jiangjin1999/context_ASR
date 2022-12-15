@@ -3,6 +3,7 @@
 T-model-baseline
 T-model-knn
 T-model-knn-ckpt
+T-model-knn-ckpt-shuffle
 
 pretrained-model/en/BART/*.bin
 pretrained-model/zh/BART/*.bin

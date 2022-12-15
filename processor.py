@@ -60,6 +60,7 @@ class TextDataProcessor(DataProcessor):
         self.is_use_knn = config.is_use_knn
         self.batch_size = config.train_batch_size
         self.SEGMENTS = config.SEGMENTS
+        self.is_shuffle_knn = config.is_shuffle_knn
     
     def _read(self, file: str) -> List[TextInputExample]:
         with open(file, 'r', encoding='utf-8') as f:
@@ -84,9 +85,9 @@ class TextDataProcessor(DataProcessor):
                     examples = [TextInputExample(self.en_utt_process(item.strip().split('|')[0]), item.strip().split('|')[2], item.strip().split('|')[1]) for item in data]
                 else:
                     examples = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[2], item.strip().split(' ')[1]) for item in data]
-            # import random
-            # a = example
-            # example = random.shuffle(a)
+            if self.is_shuffle_knn:
+                import random
+                random.shuffle(examples)
             # return example
             return examples
     
@@ -150,7 +151,7 @@ class TextDataProcessor(DataProcessor):
         return doc_item_list_output
 
     def completion2max(self, data_list, data_list_length):
-        white_example = TextInputExample("", "", "") # 如果报错，可以统一修改为。
+        white_example = TextInputExample("white_utt", "钢筋穿过后排座位并顶出车外。", "钢筋穿过后排座位并顶出车外。") # 如果报错，可以统一修改为。
         max_length = max(data_list_length)
         min_length = min(data_list_length)
         data_list = [data_doc_item + [white_example for _ in range(max_length-len(data_doc_item))] for data_doc_item in data_list]

@@ -63,7 +63,10 @@ _TOKENIZER_FOR_DOC = "BartTokenizer"
 # KNN Code:
 knn_memorizing_layers = (4, 5)
 _num_retrieved_memories_K = 32
-knn_memories_directory = '.tmp/knn.memories/'
+# knn_memories_directory = '.tmp/baseline.memories/'
+knn_memories_directory = '.tmp/knn.ckpt.memories.shuffle/'
+# knn_memories_directory = '.tmp/knn.ckpt.memories/'
+# knn_memories_directory = '.tmp/knn.memories/'
 max_knn_memories = 7680
 dim_head = 64
 depth: int = 6 # transfromer block的个数

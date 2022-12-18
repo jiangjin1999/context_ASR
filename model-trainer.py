@@ -225,13 +225,13 @@ class Trainer:
             self.dev_dataloader = self.create_dataloader(
                 dataset=text_processor.get_dev_dataset(self.config.dev_batch_size),
                 batch_size=self.config.dev_batch_size,
-                shuffle=False,
+                shuffle=self.config.shuffle,
                 collate_fn=self.convert_examples_to_features,
             )
             self.test_dataloader = self.create_dataloader(
                 dataset=text_processor.get_test_dataset(self.config.test_batch_size),
                 batch_size=self.config.test_batch_size,
-                shuffle=False,
+                shuffle=self.config.shuffle,
                 collate_fn=self.convert_examples_to_features,
             )
 
@@ -684,7 +684,7 @@ def reset_config_parse(config):
         config.model_type = config.model_type + 'T-model-baseline'
     
         
-    if config.is_use_knn is not None:
+    if config.is_shuffle_knn is not None:
         config.shuffle = True
     
     config.mode_mode_path: str = config.pwd + config.model_type

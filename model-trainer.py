@@ -55,9 +55,9 @@ class Config(Tap):
     train_batch_size: int = 100
     dev_batch_size: int = 40
     test_batch_size: int = 20
-    is_use_knn: bool = False
-    is_from_ckpt: bool = False
-    is_shuffle_knn: bool = False
+    is_use_knn: bool = True
+    is_from_ckpt: bool = True
+    is_shuffle_knn: bool = True
     SEGMENTS: int = 1 #一个subsequence包含几个句子
     max_seq_length: int = 40 # 一个句子的max length 是
     
@@ -72,7 +72,7 @@ class Config(Tap):
     current_dataset: str = 'AISHELL-1'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100'#'AIDATATANG' #['AISHELL-1', 'AIDATATANG', 'thchs'][0]
     is_pretrained: bool = True
     language: str = 'en'
-    if current_dataset in ['AISHELL-1', 'AIDATATANG', 'thchs']:
+    if current_dataset in ['AISHELL-1', 'HKUST', 'thchs']:
         is_zh = True
         language = 'zh'
     if language == 'en':

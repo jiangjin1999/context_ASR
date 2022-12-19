@@ -131,3 +131,74 @@
 
 2022-12-19 00:59:36.953 | INFO     | __main__:train_epoch:375 - =======================================
 2022-12-19 00:59:36.953 | INFO     | __main__:train_epoch:376 - training epoch<1> ...
+2022-12-19 02:19:57.899 | INFO     | __main__:on_epoch_end:520 - 
+
+2022-12-19 02:19:57.900 | INFO     | __main__:on_epoch_end:521 - dev/cer is 0.03505725652240807
+2022-12-19 02:19:58.529 | INFO     | __main__:on_evaluation_end:468 - 
+
+2022-12-19 02:19:58.529 | INFO     | __main__:on_evaluation_end:469 - dev/best_cer is 0.03505725652240807
+2022-12-19 02:19:58.530 | INFO     | __main__:predict:555 - 
+
+2022-12-19 02:19:58.530 | INFO     | __main__:predict:556 - start predicting ...
+2022-12-19 02:41:28.748 | INFO     | __main__:predict:638 - 
+
+2022-12-19 02:41:28.749 | INFO     | __main__:predict:639 - test/cer is 0.0398778547159262
+2022-12-19 02:41:28.753 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-19 02:41:28.753 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-19 02:41:28.754 | INFO     | __main__:train_epoch:376 - training epoch<2> ...
+2022-12-19 04:02:53.568 | INFO     | __main__:on_epoch_end:520 - 
+
+2022-12-19 04:02:53.568 | INFO     | __main__:on_epoch_end:521 - dev/cer is 0.032832934039607006
+2022-12-19 04:02:56.310 | INFO     | __main__:on_evaluation_end:468 - 
+
+2022-12-19 04:02:56.311 | INFO     | __main__:on_evaluation_end:469 - dev/best_cer is 0.032832934039607006
+2022-12-19 04:02:56.311 | INFO     | __main__:predict:555 - 
+
+2022-12-19 04:02:56.312 | INFO     | __main__:predict:556 - start predicting ...
+2022-12-19 04:24:32.995 | INFO     | __main__:predict:638 - 
+
+2022-12-19 04:24:32.996 | INFO     | __main__:predict:639 - test/cer is 0.037409143692744395
+2022-12-19 04:24:33.000 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-19 04:24:33.001 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-19 04:24:33.001 | INFO     | __main__:train_epoch:376 - training epoch<3> ...
+2022-12-19 05:45:01.580 | INFO     | __main__:on_epoch_end:520 - 
+
+2022-12-19 05:45:01.581 | INFO     | __main__:on_epoch_end:521 - dev/cer is 0.03152295755764116
+2022-12-19 05:45:04.309 | INFO     | __main__:on_evaluation_end:468 - 
+
+2022-12-19 05:45:04.310 | INFO     | __main__:on_evaluation_end:469 - dev/best_cer is 0.03152295755764116
+2022-12-19 05:45:04.310 | INFO     | __main__:predict:555 - 
+
+2022-12-19 05:45:04.311 | INFO     | __main__:predict:556 - start predicting ...
+2022-12-19 06:06:29.737 | INFO     | __main__:predict:638 - 
+
+2022-12-19 06:06:29.737 | INFO     | __main__:predict:639 - test/cer is 0.03584361962926326
+2022-12-19 06:06:29.742 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-19 06:06:29.742 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-19 06:06:29.742 | INFO     | __main__:train_epoch:376 - training epoch<4> ...
+2022-12-19 07:29:58.495 | INFO     | __main__:on_epoch_end:520 - 
+
+2022-12-19 07:29:58.495 | INFO     | __main__:on_epoch_end:521 - dev/cer is 0.03021298107567532
+2022-12-19 07:30:01.173 | INFO     | __main__:on_evaluation_end:468 - 
+
+2022-12-19 07:30:01.174 | INFO     | __main__:on_evaluation_end:469 - dev/best_cer is 0.03021298107567532
+2022-12-19 07:30:01.174 | INFO     | __main__:predict:555 - 
+
+2022-12-19 07:30:01.175 | INFO     | __main__:predict:556 - start predicting ...
+2022-12-19 07:52:21.003 | INFO     | __main__:predict:638 - 
+
+2022-12-19 07:52:21.004 | INFO     | __main__:predict:639 - test/cer is 0.035060857597522685
+2022-12-19 07:52:21.009 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-19 07:52:21.010 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-19 07:52:21.010 | INFO     | __main__:train_epoch:376 - training epoch<5> ...
+2022-12-19 09:13:13.737 | INFO     | __main__:on_epoch_end:520 - 
+
+2022-12-19 09:13:13.737 | INFO     | __main__:on_epoch_end:521 - dev/cer is 0.030248148229553597
+2022-12-19 09:13:13.737 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-19 09:13:13.738 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-19 09:13:13.738 | INFO     | __main__:train_epoch:376 - training epoch<6> ...

@@ -7,11 +7,11 @@ python model-trainer.py \
         --test_batch_size 20 \
         --is_use_knn \
         --max_seq_length 40
-export CUDA_VISIBLE_DEVICES=1
-python model-trainer.py \
-        --current_dataset HKUST \
-        --train_batch_size 50 \
-        --dev_batch_size 22 \
-        --test_batch_size 24 \
-        --is_use_knn \
-        --max_seq_length 80
+# export CUDA_VISIBLE_DEVICES=1
+# python model-trainer.py \
+#         --current_dataset HKUST \
+#         --train_batch_size 50 \
+#         --dev_batch_size 22 \
+#         --test_batch_size 24 \
+#         --is_use_knn \
+#         --max_seq_length 80

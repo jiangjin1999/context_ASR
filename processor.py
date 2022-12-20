@@ -8,7 +8,6 @@ from boto import config
 from torch.utils.data import Dataset, Subset, DataLoader
 import pandas as pd
 from dataclasses import dataclass
-from transformers import set_seed
 
 from wandb import Config
 
@@ -56,7 +55,6 @@ class TextDataProcessor(DataProcessor):
         super().__init__()
         self.data_dir = data_dir
         self.dataset = config.current_dataset
-        self.seed = config.seed
         self.is_use_knn = config.is_use_knn
         self.batch_size = config.train_batch_size
         self.SEGMENTS = config.SEGMENTS
@@ -82,9 +80,9 @@ class TextDataProcessor(DataProcessor):
             else:
                 if 'LIBRISPEECH' in file:
                     # print('data processor for librispeech')
-                    examples = [TextInputExample(self.en_utt_process(item.strip().split('|')[0]), item.strip().split('|')[2], item.strip().split('|')[1]) for item in data]
+                    examples = [TextInputExample(self.en_utt_process(item.strip().split('|')[0]), item.strip().split('|')[1], item.strip().split('|')[2]) for item in data]
                 else:
-                    examples = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[2], item.strip().split(' ')[1]) for item in data]
+                    examples = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[1], item.strip().split(' ')[2]) for item in data]
             if self.is_shuffle_knn:
                 import random
                 random.shuffle(examples)
@@ -94,7 +92,9 @@ class TextDataProcessor(DataProcessor):
     def knn_doc_process(self, doc_list):
         doc_num = len(doc_list)
         # 给每个doc 补全到SEGMENTS的倍数
-        doc_list = [doc_item+[doc_item[-1] for _ in range(self.SEGMENTS-len(doc_item)%self.SEGMENTS)] for doc_item in doc_list]
+        white_example = TextInputExample("white_utt", "。", "。") # 如果报错，可以统一修改为。
+        
+        doc_list = [doc_item+[white_example for _ in range(self.SEGMENTS-len(doc_item)%self.SEGMENTS)] for doc_item in doc_list]
 
         # 把所有的doc 按照一种策略-总是给当前最短的那一个，分配给batch size个 list
         data_list = [[]for _ in range(self.batch_size)]
@@ -151,7 +151,7 @@ class TextDataProcessor(DataProcessor):
         return doc_item_list_output
 
     def completion2max(self, data_list, data_list_length):
-        white_example = TextInputExample("white_utt", "钢筋穿过后排座位并顶出车外。", "钢筋穿过后排座位并顶出车外。") # 如果报错，可以统一修改为。
+        white_example = TextInputExample("white_utt", "。", "。") # 如果报错，可以统一修改为。
         max_length = max(data_list_length)
         min_length = min(data_list_length)
         data_list = [data_doc_item + [white_example for _ in range(max_length-len(data_doc_item))] for data_doc_item in data_list]
@@ -173,10 +173,6 @@ class TextDataProcessor(DataProcessor):
     def _load_dataset(self, mode: str = 'train.txt') -> Dataset:
         file = os.path.join(self.data_dir, mode)
         examples = self._read(file)
-        #
-        # import random
-        # set_seed(self.seed)
-        # random.shuffle(examples)
         indices = [i for i in range(len(examples))] 
         return Subset(examples, indices) 
 

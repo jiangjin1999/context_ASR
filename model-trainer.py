@@ -43,8 +43,8 @@ from model.modeling_bart import (BartForContextCorretion, BartModel)
 
 
 class Config(Tap):
-    # config 中 变量的定义和其他变量有关系的变量
-    # 如果想通过 .sh 传参数，就必须在代码中，重新进行这一步。
+
+
     seed: int = 2022
 
 
@@ -55,9 +55,9 @@ class Config(Tap):
     train_batch_size: int = 100
     dev_batch_size: int = 40
     test_batch_size: int = 20
-    is_use_knn: bool = True
-    is_from_ckpt: bool = True
-    is_shuffle_knn: bool = True
+    is_use_knn: bool = False
+    is_from_ckpt: bool = False
+    is_shuffle_knn: bool = False
     SEGMENTS: int = 1 #一个subsequence包含几个句子
     max_seq_length: int = 40 # 一个句子的max length 是
     
@@ -453,6 +453,9 @@ class Trainer:
                     all_decoded_preds = all_decoded_preds + decoded_preds
                     all_decoded_labels = all_decoded_labels + decoded_labels
 
+        all_decoded_labels = [item for item in all_decoded_labels if item!='。']
+        all_decoded_preds = [item for item in all_decoded_preds if item!='。']
+        assert len(all_decoded_labels)==len(all_decoded_preds)
         metric_score = self.metric.compute(
             predictions=all_decoded_preds, references=all_decoded_labels)
 
@@ -612,6 +615,11 @@ class Trainer:
                     
                     all_decoded_preds = all_decoded_preds + decoded_preds
                     all_decoded_labels = all_decoded_labels + decoded_labels
+        all_decoded_inputs = [item for item in all_decoded_inputs if item!='。']
+        all_decoded_labels = [item for item in all_decoded_labels if item!='。']
+        all_decoded_preds = [item for item in all_decoded_preds if item!='。']
+        assert len(all_decoded_labels)==len(all_decoded_preds)==len(all_decoded_inputs)
+        
         if FLAG is not None:
             pass
         else:
@@ -684,7 +692,7 @@ def reset_config_parse(config):
         config.model_type = config.model_type + 'T-model-baseline'
     
         
-    if config.is_shuffle_knn is not None:
+    if config.is_shuffle_knn or config.is_use_knn is False :
         config.shuffle = True
     
     config.mode_mode_path: str = config.pwd + config.model_type
@@ -765,16 +773,16 @@ if __name__ == "__main__":
         metric=load_metric(config.metric),
         is_use_knn=config.is_use_knn,
     )
-    if config.mode == 'train':
-        logger.add(os.path.join(config.log_path, 'train.'+config.current_dataset+'.T-model-log.txt'))
-        if config.local_rank=='0':
-            logger.info(config)
-        trainer.train()
-    elif config.mode == 'test':
-        logger.add(os.path.join(config.log_path, 'test.'+config.current_dataset+'.T-model-log.txt'))
-        # if config.local_rank=='0':
-            # logger.info(config)
-        trainer.predict()
+    # if config.mode == 'train':
+    #     logger.add(os.path.join(config.log_path, 'train.'+config.current_dataset+'.T-model-log.txt'))
+    #     if config.local_rank=='0':
+    #         logger.info(config)
+    #     trainer.train()
+    # elif config.mode == 'test':
+    logger.add(os.path.join(config.log_path, 'test.'+config.current_dataset+'.T-model-log.txt'))
+    # if config.local_rank=='0':
+        # logger.info(config)
+    trainer.predict()
 
 
 

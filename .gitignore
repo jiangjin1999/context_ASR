@@ -1,10 +1,23 @@
 # 文件夹
 .tmp
-T-model-baseline
-T-model-knn
-T-model-knn-ckpt
-T-model-knn-ckpt-shuffle
-T-model-knn-shuffle
+T-model-baseline/*/model-checkpoint/*.pt
+T-model-knn/*/model-checkpoint/*.pt
+T-model-knn-ckpt/*/model-checkpoint/*.pt
+T-model-knn-ckpt-shuffle/*/model-checkpoint/*.pt
+T-model-knn-shuffle/*/model-checkpoint/*.pt
+
+T-model-baseline/*/tensorboard
+T-model-knn/*/tensorboard
+T-model-knn-ckpt/*/tensorboard
+T-model-knn-ckpt-shuffle/*/tensorboard
+T-model-knn-shuffle/*/tensorboard
+T-model-knn-shuffle/AISHELL-1
+
+T-model-baseline/*/result/*.txt
+T-model-knn/*/result/*.txt
+T-model-knn-ckpt/*/result/*.txt
+T-model-knn-ckpt-shuffle/*/result/*.txt
+T-model-knn-shuffle/*/result/*.txt
 
 pretrained-model/en/BART/*.bin
 pretrained-model/zh/BART/*.bin

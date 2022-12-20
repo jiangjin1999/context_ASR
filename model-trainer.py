@@ -55,7 +55,7 @@ class Config(Tap):
     train_batch_size: int = 100
     dev_batch_size: int = 40
     test_batch_size: int = 20
-    is_use_knn: bool = False
+    is_use_knn: bool = True
     is_from_ckpt: bool = False
     is_shuffle_knn: bool = False
     SEGMENTS: int = 1 #一个subsequence包含几个句子
@@ -672,7 +672,16 @@ def set_my_seed(seed):
     '''random:
         python
         Numpy'''
-    set_seed(seed)
+    # set_seed(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    
+    # torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    
+    import tensorflow as tf
+    tf.random.set_seed(seed)
+    
     from torch.backends import cudnn
     cudnn.benchmark = False
     cudnn.deterministic = True
@@ -692,7 +701,7 @@ def reset_config_parse(config):
         config.model_type = config.model_type + 'T-model-baseline'
     
         
-    if config.is_shuffle_knn or config.is_use_knn is False :
+    if config.is_shuffle_knn or config.is_use_knn is False:
         config.shuffle = True
     
     config.mode_mode_path: str = config.pwd + config.model_type
@@ -777,12 +786,12 @@ if __name__ == "__main__":
     #     logger.add(os.path.join(config.log_path, 'train.'+config.current_dataset+'.T-model-log.txt'))
     #     if config.local_rank=='0':
     #         logger.info(config)
-    #     trainer.train()
+    trainer.train()
     # elif config.mode == 'test':
-    logger.add(os.path.join(config.log_path, 'test.'+config.current_dataset+'.T-model-log.txt'))
-    # if config.local_rank=='0':
-        # logger.info(config)
-    trainer.predict()
+    # logger.add(os.path.join(config.log_path, 'test.'+config.current_dataset+'.T-model-log.txt'))
+    # # if config.local_rank=='0':
+    #     # logger.info(config)
+    # trainer.predict()
 
 
 

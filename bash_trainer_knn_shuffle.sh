@@ -8,12 +8,12 @@ python model-trainer.py \
         --is_use_knn \
         --max_seq_length 40 \
         --is_shuffle_knn
-export CUDA_VISIBLE_DEVICES=1
-python model-trainer.py \
-        --current_dataset HKUST \
-        --train_batch_size 50 \
-        --dev_batch_size 22 \
-        --test_batch_size 24 \
-        --is_use_knn \
-        --max_seq_length 80 \
-        --is_shuffle_knn
+# export CUDA_VISIBLE_DEVICES=1
+# python model-trainer.py \
+#         --current_dataset HKUST \
+#         --train_batch_size 50 \
+#         --dev_batch_size 22 \
+#         --test_batch_size 24 \
+#         --is_use_knn \
+#         --max_seq_length 80 \
+#         --is_shuffle_knn

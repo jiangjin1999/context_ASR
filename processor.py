@@ -83,9 +83,6 @@ class TextDataProcessor(DataProcessor):
                     examples = [TextInputExample(self.en_utt_process(item.strip().split('|')[0]), item.strip().split('|')[1], item.strip().split('|')[2]) for item in data]
                 else:
                     examples = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[1], item.strip().split(' ')[2]) for item in data]
-            if self.is_shuffle_knn:
-                import random
-                random.shuffle(examples)
             # return example
             return examples
     

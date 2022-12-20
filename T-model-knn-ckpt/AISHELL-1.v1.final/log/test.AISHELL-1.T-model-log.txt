@@ -1,0 +1,10 @@
+2022-12-20 16:55:58.422 | INFO     | __main__:predict:558 - 
+
+2022-12-20 16:55:58.423 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-20 16:55:58.423 | INFO     | __main__:load_model:654 - load model ...
+2022-12-20 17:43:26.064 | INFO     | __main__:predict:644 - 
+
+2022-12-20 17:43:26.064 | INFO     | __main__:predict:645 - raw/cer is 0.04312170021172246
+2022-12-20 17:43:26.064 | INFO     | __main__:predict:646 - 
+
+2022-12-20 17:43:26.065 | INFO     | __main__:predict:647 - test/cer is 0.036260820625519254

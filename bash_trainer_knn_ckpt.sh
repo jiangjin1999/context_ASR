@@ -8,12 +8,12 @@ python model-trainer.py \
         --is_use_knn \
         --is_from_ckpt \
         --max_seq_length 40
-export CUDA_VISIBLE_DEVICES=3
-python model-trainer.py \
-        --current_dataset HKUST \
-        --train_batch_size 50 \
-        --dev_batch_size 22 \
-        --test_batch_size 24 \
-        --is_use_knn \
-        --is_from_ckpt \
-        --max_seq_length 80
+# export CUDA_VISIBLE_DEVICES=3
+# python model-trainer.py \
+#         --current_dataset HKUST \
+#         --train_batch_size 50 \
+#         --dev_batch_size 22 \
+#         --test_batch_size 24 \
+#         --is_use_knn \
+#         --is_from_ckpt \
+#         --max_seq_length 80

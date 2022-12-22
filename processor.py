@@ -66,6 +66,7 @@ class TextDataProcessor(DataProcessor):
             if self.is_use_knn:
                 data_key = data[0]
                 data = data[1:]
+                # data = data[0:10]
                 data_doc = []
                 for item in data:
                     if item.strip() == '<d>':
@@ -84,12 +85,13 @@ class TextDataProcessor(DataProcessor):
                 else:
                     examples = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[1], item.strip().split(' ')[2]) for item in data]
             # return example
+            # examples = examples[0:150]
             return examples
     
     def knn_doc_process(self, doc_list):
         doc_num = len(doc_list)
         # 给每个doc 补全到SEGMENTS的倍数
-        white_example = TextInputExample("white_utt", "。", "。") # 如果报错，可以统一修改为。
+        white_example = TextInputExample("white_utt", "空白案例。", "空白案例。") # 如果报错，可以统一修改为。
         
         doc_list = [doc_item+[white_example for _ in range(self.SEGMENTS-len(doc_item)%self.SEGMENTS)] for doc_item in doc_list]
 
@@ -148,7 +150,7 @@ class TextDataProcessor(DataProcessor):
         return doc_item_list_output
 
     def completion2max(self, data_list, data_list_length):
-        white_example = TextInputExample("white_utt", "。", "。") # 如果报错，可以统一修改为。
+        white_example = TextInputExample("white_utt", "空白案例。", "空白案例。") # 如果报错，可以统一修改为。
         max_length = max(data_list_length)
         min_length = min(data_list_length)
         data_list = [data_doc_item + [white_example for _ in range(max_length-len(data_doc_item))] for data_doc_item in data_list]

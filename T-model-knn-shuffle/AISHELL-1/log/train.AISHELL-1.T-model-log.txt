@@ -1,0 +1,252 @@
+2022-12-21 11:23:49.774 | INFO     | __main__:<module>:788 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 101,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 102,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 102,
+  "forced_eos_token_id": 102,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 4,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 512,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 0,
+  "scale_embedding": false,
+  "task_specific_params": {
+    "summarization": {
+      "length_penalty": 1.0,
+      "max_length": 128,
+      "min_length": 12,
+      "num_beams": 4
+    },
+    "summarization_cnn": {
+      "length_penalty": 2.0,
+      "max_length": 142,
+      "min_length": 56,
+      "num_beams": 4
+    },
+    "summarization_xsum": {
+      "length_penalty": 1.0,
+      "max_length": 62,
+      "min_length": 11,
+      "num_beams": 6
+    }
+  },
+  "transformers_version": "4.24.0.dev0",
+  "use_cache": true,
+  "vocab_size": 21128
+}
+,
+ 'SEGMENTS': 1,
+ 'audio_feature_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/data/zh/AISHELL-1/audio-feature/wav2vec_feature.h5',
+ 'best_model_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle/AISHELL-1/model-checkpoint/',
+ 'current_dataset': 'AISHELL-1',
+ 'd_model': 768,
+ 'dev_batch_size': 40,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7f146c295370>,
+ 'early_stop_flag': False,
+ 'epochs': 100,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'gradient_accumulation_steps': 1,
+ 'is_from_ckpt': False,
+ 'is_pretrained': True,
+ 'is_shuffle_knn': True,
+ 'is_use_DDP': False,
+ 'is_use_knn': True,
+ 'is_zh': True,
+ 'language': 'zh',
+ 'learning_rate': 5e-05,
+ 'local_rank': '0',
+ 'log_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle/AISHELL-1/log/',
+ 'lr_scheduler_type': 'cosine',
+ 'max_seq_length': 40,
+ 'max_train_steps': 142400,
+ 'metric': 'cer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle',
+ 'mode_mode_path_dataset': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle/AISHELL-1',
+ 'model_type': 'T-model-knn-shuffle',
+ 'num_batch_per_evaluation': 10,
+ 'num_warmup_steps': 200,
+ 'phoneme_model_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/phoneme_model',
+ 'pretrained_model': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/KNN_BART',
+ 'pwd': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/',
+ 'sampler': None,
+ 'seed': 2022,
+ 'shuffle': True,
+ 'sim': Similarity(
+  (cos): CosineSimilarity()
+),
+ 'tensorboard_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle/AISHELL-1/tensorboard/',
+ 'test_batch_size': 20,
+ 'test_result_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle/AISHELL-1/result/',
+ 'text_data_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/data/zh',
+ 'train_batch_size': 100,
+ 'weight_decay': 0.02}
+2022-12-21 11:23:49.829 | INFO     | __main__:train:499 - start training ...
+2022-12-21 11:23:49.829 | INFO     | __main__:train:500 -   num example = 1424
+2022-12-21 11:23:49.830 | INFO     | __main__:train:501 -   num epochs = 100
+2022-12-21 11:23:49.830 | INFO     | __main__:train:502 -    Total train batch size (w. parallel, distributed & accumulation) = 100
+2022-12-21 11:23:49.830 | INFO     | __main__:train:503 -   Gradient Accumulation steps = 1
+2022-12-21 11:23:49.830 | INFO     | __main__:train:504 -   total optimization step = 142400
+2022-12-21 11:23:49.830 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-21 11:23:49.830 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-21 11:23:49.830 | INFO     | __main__:train_epoch:376 - training epoch<1> ...
+2022-12-21 15:02:34.063 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-21 15:02:34.063 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.0359796405222807
+2022-12-21 15:02:34.910 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-21 15:02:34.910 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.0359796405222807
+2022-12-21 15:02:34.911 | INFO     | __main__:predict:558 - 
+
+2022-12-21 15:02:34.911 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-21 16:26:29.945 | INFO     | __main__:predict:646 - 
+
+2022-12-21 16:26:29.945 | INFO     | __main__:predict:647 - test/cer is 0.041058076273684775
+2022-12-21 16:26:29.950 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-21 16:26:29.950 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-21 16:26:29.950 | INFO     | __main__:train_epoch:376 - training epoch<2> ...
+2022-12-21 19:38:30.886 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-21 19:38:30.887 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.03442263216360425
+2022-12-21 19:38:34.926 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-21 19:38:34.986 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.03442263216360425
+2022-12-21 19:38:34.987 | INFO     | __main__:predict:558 - 
+
+2022-12-21 19:38:34.987 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-21 21:01:16.589 | INFO     | __main__:predict:646 - 
+
+2022-12-21 21:01:16.589 | INFO     | __main__:predict:647 - test/cer is 0.03911952045310392
+2022-12-21 21:01:16.595 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-21 21:01:16.596 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-21 21:01:16.596 | INFO     | __main__:train_epoch:376 - training epoch<3> ...
+2022-12-22 00:06:06.287 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-22 00:06:06.288 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.0324285688270537
+2022-12-22 00:06:10.982 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-22 00:06:10.982 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.0324285688270537
+2022-12-22 00:06:10.983 | INFO     | __main__:predict:558 - 
+
+2022-12-22 00:06:10.983 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-22 01:39:03.573 | INFO     | __main__:predict:646 - 
+
+2022-12-22 01:39:03.574 | INFO     | __main__:predict:647 - test/cer is 0.03723456525429028
+2022-12-22 01:39:03.578 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-22 01:39:03.579 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-22 01:39:03.579 | INFO     | __main__:train_epoch:376 - training epoch<4> ...
+2022-12-22 04:58:57.399 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-22 04:58:57.399 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.032105330249667656
+2022-12-22 04:59:02.232 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-22 04:59:02.232 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.032105330249667656
+2022-12-22 04:59:02.233 | INFO     | __main__:predict:558 - 
+
+2022-12-22 04:59:02.233 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-22 06:17:47.661 | INFO     | __main__:predict:646 - 
+
+2022-12-22 06:17:47.662 | INFO     | __main__:predict:647 - test/cer is 0.03722563181732908
+2022-12-22 06:17:47.667 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-22 06:17:47.667 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-22 06:17:47.667 | INFO     | __main__:train_epoch:376 - training epoch<5> ...
+2022-12-22 09:00:26.300 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-22 09:00:26.300 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.031599985431500735
+2022-12-22 09:00:30.815 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-22 09:00:30.815 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.031599985431500735
+2022-12-22 09:00:30.816 | INFO     | __main__:predict:558 - 
+
+2022-12-22 09:00:30.816 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-22 09:38:48.063 | INFO     | __main__:predict:646 - 
+
+2022-12-22 09:38:48.063 | INFO     | __main__:predict:647 - test/cer is 0.03647522311258811
+2022-12-22 09:38:48.068 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-22 09:38:48.068 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-22 09:38:48.069 | INFO     | __main__:train_epoch:376 - training epoch<6> ...
+2022-12-22 11:30:02.486 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-22 11:30:02.486 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.03135869466246608
+2022-12-22 11:30:06.596 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-22 11:30:06.596 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.03135869466246608
+2022-12-22 11:30:06.597 | INFO     | __main__:predict:558 - 
+
+2022-12-22 11:30:06.597 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-22 12:13:23.659 | INFO     | __main__:predict:646 - 
+
+2022-12-22 12:13:23.659 | INFO     | __main__:predict:647 - test/cer is 0.0360106843906056
+2022-12-22 12:13:23.665 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-22 12:13:23.665 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-22 12:13:23.666 | INFO     | __main__:train_epoch:376 - training epoch<7> ...
+2022-12-22 14:09:27.472 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-22 14:09:27.473 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.031800302296359696
+2022-12-22 14:09:27.474 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-22 14:09:27.474 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-22 14:09:27.475 | INFO     | __main__:train_epoch:376 - training epoch<8> ...
+2022-12-22 16:00:54.585 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-22 16:00:54.586 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.031108298581392385
+2022-12-22 16:00:58.167 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-22 16:00:58.168 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.031108298581392385
+2022-12-22 16:00:58.168 | INFO     | __main__:predict:558 - 
+
+2022-12-22 16:00:58.168 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-22 16:40:22.870 | INFO     | __main__:predict:646 - 
+
+2022-12-22 16:40:22.871 | INFO     | __main__:predict:647 - test/cer is 0.03572481440784713
+2022-12-22 16:40:22.875 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-22 16:40:22.876 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-22 16:40:22.876 | INFO     | __main__:train_epoch:376 - training epoch<9> ...

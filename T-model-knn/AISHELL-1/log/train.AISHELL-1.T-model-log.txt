@@ -243,3 +243,10 @@
 2022-12-22 16:54:11.000 | INFO     | __main__:predict:558 - 
 
 2022-12-22 16:54:11.001 | INFO     | __main__:predict:559 - start predicting ...
+2022-12-22 17:45:32.189 | INFO     | __main__:predict:646 - 
+
+2022-12-22 17:45:32.189 | INFO     | __main__:predict:647 - test/cer is 0.037020162767221435
+2022-12-22 17:45:32.195 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-22 17:45:32.195 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-22 17:45:32.195 | INFO     | __main__:train_epoch:376 - training epoch<9> ...

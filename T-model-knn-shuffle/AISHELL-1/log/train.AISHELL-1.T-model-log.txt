@@ -340,3 +340,7 @@
 
 2022-12-23 23:09:52.865 | INFO     | __main__:train_epoch:375 - =======================================
 2022-12-23 23:09:52.865 | INFO     | __main__:train_epoch:376 - training epoch<18> ...
+2022-12-24 01:56:12.431 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-24 01:56:12.432 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.030602953763225464
+2022-12-24 01:56:12.433 | INFO     | __main__:train:516 - early stopping on train epoch

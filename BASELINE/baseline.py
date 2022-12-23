@@ -701,7 +701,7 @@ def reset_config_parse(config):
         config.model_type = 'pretrained-'
     config.model_type = config.model_type + 'T-model'
 
-    config.mode_mode_path: str = config.pwd + config.model_type
+    config.mode_mode_path: str = config.pwd + '/BASELINE/' +config.model_type
     config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.current_dataset
     
     config.best_model_dir: str = config.mode_mode_path_dataset + '/model-checkpoint/'
@@ -755,13 +755,11 @@ if __name__ == "__main__":
     # print(config.is_jointly_train)
     
 
-    
-    
     set_my_seed(config.seed)
-    if os.path.exists(config.mode_mode_path_dataset):
-        pass
-    else:
-        os.makedirs(config.mode_mode_path_dataset)
+    # if os.path.exists(config.mode_mode_path_dataset):
+    #     pass
+    # else:
+    #     os.makedirs(config.mode_mode_path_dataset)
         
     if config.is_pretrained==True:
         MODEL_TYPE = AutoModelForSeq2SeqLM.from_pretrained(config.pretrained_model)

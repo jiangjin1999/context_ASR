@@ -90,10 +90,10 @@ class TextDataProcessor(DataProcessor):
     
     def knn_doc_process(self, doc_list):
         doc_num = len(doc_list)
-        # 给每个doc 补全到SEGMENTS的倍数
-        white_example = TextInputExample("white_utt", "空白案例。", "空白案例。") # 如果报错，可以统一修改为。
+        # 给每个doc 补全到SEGMENTS的倍数--我们设置subsequence均为 一个句子，所以，无需补全为倍数
+        # white_example = TextInputExample("white_utt", "空白案例。", "空白案例。") # 如果报错，可以统一修改为。
         
-        doc_list = [doc_item+[white_example for _ in range(self.SEGMENTS-len(doc_item)%self.SEGMENTS)] for doc_item in doc_list]
+        # doc_list = [doc_item+[white_example for _ in range(self.SEGMENTS-len(doc_item)%self.SEGMENTS)] for doc_item in doc_list]
 
         # 把所有的doc 按照一种策略-总是给当前最短的那一个，分配给batch size个 list
         data_list = [[]for _ in range(self.batch_size)]
@@ -102,7 +102,7 @@ class TextDataProcessor(DataProcessor):
             data_list, data_list_length = self.write2min(doc_item, data_list, data_list_length)
             
         # 把数据按照 SEGMENTS 进行合并
-        data_list = [[self.MergeSEGMENTS(doc_item) for doc_item in batch_item] for batch_item in data_list]
+        # data_list = [[self.MergeSEGMENTS(doc_item) for doc_item in batch_item] for batch_item in data_list]
         # for batch_item in data_list:
         #     for doc_item in batch_item:
         #         doc_item = self.MergeSEGMENTS(doc_item)

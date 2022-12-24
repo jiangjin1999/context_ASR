@@ -60,6 +60,7 @@ class Config(Tap):
     is_shuffle_knn: bool = False
     SEGMENTS: int = 1 #一个subsequence包含几个句子
     max_seq_length: int = 40 # 一个句子的max length 是
+    is_add_sos_eos: bool = False
     
     
     
@@ -453,8 +454,18 @@ class Trainer:
                     all_decoded_preds = all_decoded_preds + decoded_preds
                     all_decoded_labels = all_decoded_labels + decoded_labels
 
-        all_decoded_labels = [item_label for item_label, item_preds in zip(all_decoded_labels, all_decoded_preds) if item_label!='空白案例。']
-        all_decoded_preds = [item_preds for item_label, item_preds in zip(all_decoded_labels, all_decoded_preds) if item_label!='空白案例。']
+        all_decoded_pred, all_decoded_label = [], []
+        for i in range(len(all_decoded_labels)):
+            item_label = all_decoded_labels[i]
+            item_pred = all_decoded_preds[i]
+            if item_label != '空白案例。':
+                all_decoded_pred.append(item_pred)
+                all_decoded_label.append(item_label)
+            else:
+                pass
+        all_decoded_labels = all_decoded_label
+        all_decoded_preds = all_decoded_pred
+        assert len(all_decoded_labels)==len(all_decoded_preds)
         assert len(all_decoded_labels)==len(all_decoded_preds)
         metric_score = self.metric.compute(
             predictions=all_decoded_preds, references=all_decoded_labels)
@@ -616,8 +627,17 @@ class Trainer:
                     all_decoded_preds = all_decoded_preds + decoded_preds
                     all_decoded_labels = all_decoded_labels + decoded_labels
         all_decoded_inputs = [item for item_label, item in zip(all_decoded_labels, all_decoded_inputs) if item_label!='空白案例。']
-        all_decoded_labels = [item_label for item_label, item_preds in zip(all_decoded_labels, all_decoded_preds) if item_label!='空白案例。']
-        all_decoded_preds = [item_preds for item_label, item_preds in zip(all_decoded_labels, all_decoded_preds) if item_label!='空白案例。']
+        all_decoded_pred, all_decoded_label = [], []
+        for i in range(len(all_decoded_labels)):
+            item_label = all_decoded_labels[i]
+            item_pred = all_decoded_preds[i]
+            if item_label != '空白案例。':
+                all_decoded_pred.append(item_pred)
+                all_decoded_label.append(item_label)
+            else:
+                pass
+        all_decoded_labels = all_decoded_label
+        all_decoded_preds = all_decoded_pred
         assert len(all_decoded_labels)==len(all_decoded_preds)
         
         if FLAG is not None:

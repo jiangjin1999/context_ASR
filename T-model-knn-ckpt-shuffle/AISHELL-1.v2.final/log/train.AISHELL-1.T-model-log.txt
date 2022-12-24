@@ -345,3 +345,28 @@
 
 2022-12-24 01:04:38.994 | INFO     | __main__:train_epoch:375 - =======================================
 2022-12-24 01:04:38.994 | INFO     | __main__:train_epoch:376 - training epoch<20> ...
+2022-12-24 03:02:57.163 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-24 03:02:57.164 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.03073953344381112
+2022-12-24 03:02:57.165 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-24 03:02:57.166 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-24 03:02:57.166 | INFO     | __main__:train_epoch:376 - training epoch<21> ...
+2022-12-24 04:48:19.031 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-24 04:48:19.032 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.030602953763225464
+2022-12-24 04:48:19.032 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-24 04:48:19.033 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-24 04:48:19.033 | INFO     | __main__:train_epoch:376 - training epoch<22> ...
+2022-12-24 06:34:21.107 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-24 06:34:21.108 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.030780507347986815
+2022-12-24 06:34:21.109 | INFO     | __main__:train_epoch:374 - 
+
+2022-12-24 06:34:21.109 | INFO     | __main__:train_epoch:375 - =======================================
+2022-12-24 06:34:21.109 | INFO     | __main__:train_epoch:376 - training epoch<23> ...
+2022-12-24 08:21:08.251 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-24 08:21:08.252 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.030407189554386028
+2022-12-24 08:21:08.252 | INFO     | __main__:train:516 - early stopping on train epoch

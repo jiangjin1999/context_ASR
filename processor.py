@@ -59,6 +59,7 @@ class TextDataProcessor(DataProcessor):
         self.batch_size = config.train_batch_size
         self.SEGMENTS = config.SEGMENTS
         self.is_shuffle_knn = config.is_shuffle_knn
+        self.is_add_sos_eos = config.is_add_sos_eos
     
     def _read(self, file: str) -> List[TextInputExample]:
         with open(file, 'r', encoding='utf-8') as f:
@@ -144,8 +145,12 @@ class TextDataProcessor(DataProcessor):
     
     def mergelist(self, doc_item_list):
         doc_item_list_output = []
-        for item in doc_item_list:
-            doc_item_list_output = doc_item_list_output + item
+        if self.is_add_sos_eos:
+            for item in doc_item_list:
+                doc_item_list_output = doc_item_list_output + item
+        else:
+            for item in doc_item_list:
+                doc_item_list_output = doc_item_list_output + item
     
         return doc_item_list_output
 

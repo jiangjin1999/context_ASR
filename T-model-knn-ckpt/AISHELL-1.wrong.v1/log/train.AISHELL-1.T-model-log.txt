@@ -250,3 +250,12 @@
 
 2022-12-23 23:45:58.337 | INFO     | __main__:train_epoch:375 - =======================================
 2022-12-23 23:45:58.337 | INFO     | __main__:train_epoch:376 - training epoch<9> ...
+2022-12-24 02:15:44.799 | INFO     | __main__:on_epoch_end:523 - 
+
+2022-12-24 02:15:44.799 | INFO     | __main__:on_epoch_end:524 - dev/cer is 0.09952106058674631
+2022-12-24 02:15:48.905 | INFO     | __main__:on_evaluation_end:471 - 
+
+2022-12-24 02:15:48.905 | INFO     | __main__:on_evaluation_end:472 - dev/best_cer is 0.09952106058674631
+2022-12-24 02:15:48.905 | INFO     | __main__:predict:558 - 
+
+2022-12-24 02:15:48.906 | INFO     | __main__:predict:559 - start predicting ...

@@ -1691,8 +1691,8 @@ class BartForContextCorretion(BartPretrainedModel):
             max_memories = self.max_knn_memories,
             multiprocessing = False
         )
-        self.clear_memories_on_sos_token_id = None #clear_memories_on_sos_token_id
-        self.clear_memories_on_eos_token_id = None #clear_memories_on_eos_token_id
+        self.clear_memories_on_sos_token_id = None #33
+        self.clear_memories_on_eos_token_id = None #34
         self.config  = config
 
     def get_encoder(self):
@@ -1756,7 +1756,11 @@ class BartForContextCorretion(BartPretrainedModel):
         """ for auto-clearing KNN memories based on start and end of strings """
 
         clear_memory = (x == token_id).any(dim = -1)
-        batch_indices, _ = clear_memory.nonzero(as_tuple = True)
+        if True in clear_memory:
+            batch_indices, _ = clear_memory.nonzero(as_tuple = True)
+        else:
+            batch_indices = clear_memory.nonzero(as_tuple = True)
+            batch_indices = batch_indices[0] 
         batch_indices_to_clear = batch_indices.tolist()
 
         if len(batch_indices_to_clear) == 0:
@@ -1837,6 +1841,10 @@ class BartForContextCorretion(BartPretrainedModel):
             knn_memories=decoder_knn_memories,
         )
         lm_logits = self.lm_head(outputs[0]) + self.final_logits_bias
+        
+        if self.config.is_use_knn:                
+            if exists(self.clear_memories_on_eos_token_id):
+                self.clear_memory(inputs_embeds, self.clear_memories_on_eos_token_id)
 
         masked_lm_loss = None
         if labels is not None:

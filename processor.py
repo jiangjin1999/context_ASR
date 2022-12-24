@@ -147,6 +147,10 @@ class TextDataProcessor(DataProcessor):
         doc_item_list_output = []
         if self.is_add_sos_eos:
             for item in doc_item_list:
+                item[0].lab = '$' + item[0].lab
+                item[0].rec = '$' + item[0].rec
+                item[-1].lab = '%' + item[-1].lab
+                item[-1].rec = '%' + item[-1].rec
                 doc_item_list_output = doc_item_list_output + item
         else:
             for item in doc_item_list:

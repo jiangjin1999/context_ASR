@@ -12,6 +12,7 @@ T-model-knn-ckpt/*/tensorboard
 T-model-knn-ckpt-shuffle/*/tensorboard
 T-model-knn-shuffle/*/tensorboard
 
+BASELINE/pretrained-T-model
 
 T-model-baseline/*/result/*.txt
 T-model-knn/*/result/*.txt

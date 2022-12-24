@@ -55,12 +55,12 @@ class Config(Tap):
     train_batch_size: int = 100
     dev_batch_size: int = 40
     test_batch_size: int = 20
-    is_use_knn: bool = False
+    is_use_knn: bool = True
     is_from_ckpt: bool = False
     is_shuffle_knn: bool = False
     SEGMENTS: int = 1 #一个subsequence包含几个句子
     max_seq_length: int = 40 # 一个句子的max length 是
-    is_add_sos_eos: bool = False
+    is_add_sos_eos: bool = True
     
     
     

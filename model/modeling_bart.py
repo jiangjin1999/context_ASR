@@ -67,7 +67,7 @@ _num_retrieved_memories_K = 32
 
 # knn_memories_directory = '.tmp/knn.memories/'
 # knn_memories_directory = '.tmp/knn.ckpt.memories/'
-knn_memories_directory = '.tmp/knn.memories.shuffle/'
+# knn_memories_directory = '.tmp/knn.memories.shuffle/'
 # knn_memories_directory = '.tmp/knn.ckpt.memories.shuffle/'
 
 max_knn_memories = 7680

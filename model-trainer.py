@@ -23,7 +23,6 @@ from torch.optim import AdamW
 from torch.utils.data import DataLoader, Dataset
 
 from torch.utils.tensorboard import SummaryWriter
-from torch.nn.parallel import DistributedDataParallel 
 from tqdm.auto import tqdm
 from transformers import (AdamW, AutoConfig, AutoModelForSeq2SeqLM,BertTokenizer,
                           AutoTokenizer, BertConfig, PreTrainedModel,BartForConditionalGeneration,
@@ -65,9 +64,8 @@ class Config(Tap):
     
     
 
-
     mode: str = 'train'    
-    is_use_DDP:bool = False
+
     
 
     current_dataset: str = 'HKUST'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100'#'AIDATATANG' #['AISHELL-1', 'AIDATATANG', 'thchs'][0]
@@ -135,10 +133,7 @@ class Config(Tap):
 
     def get_device(self):
         """return the device"""
-        if config.is_use_DDP is True:
-            return torch.device(self.device, int(local_rank))
-        else:
-            return torch.device(self.device)
+        return torch.device(self.device)
 
 
 class ContextContainer:
@@ -186,55 +181,30 @@ class Trainer:
 
         model.resize_token_embeddings(len(text_tokenizer))
 
-        if self.config.is_use_DDP is True:
-            model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
-            model = model.to(self.config.get_device())
-            self.model = DDP(model, device_ids=[int(self.config.local_rank)], output_device=[int(self.config.local_rank)], find_unused_parameters=False)
-        else:
-            self.model = model.to(self.config.get_device())
+        self.model = model.to(self.config.get_device())
 
         # 2. build text & audio dataloader
         if self.config.local_rank=='0':
             logger.info('init text  dataloaders ...')
 
-        if self.config.is_use_DDP is True:
-            self.train_dataloader = self.create_DDP_dataloader(
-                dataset=text_processor.get_train_dataset(self.config.train_batch_size),
-                batch_size=self.config.train_batch_size,
-                shuffle=False,
-                collate_fn=self.convert_examples_to_features,
-            )
-            self.dev_dataloader = self.create_dataloader(
-                dataset=text_processor.get_dev_dataset(self.config.dev_batch_size),
-                batch_size=self.config.dev_batch_size,
-                shuffle=False,
-                collate_fn=self.convert_examples_to_features,
-            )
-            self.test_dataloader = self.create_dataloader(
-                dataset=text_processor.get_test_dataset(self.config.test_batch_size),
-                batch_size=self.config.test_batch_size,
-                shuffle=False,
-                collate_fn=self.convert_examples_to_features,
-                )
-        else:   
-            self.train_dataloader = self.create_dataloader(
-                dataset=text_processor.get_train_dataset(self.config.train_batch_size),
-                batch_size=self.config.train_batch_size,
-                shuffle=self.config.shuffle,
-                collate_fn=self.convert_examples_to_features,
-            )
-            self.dev_dataloader = self.create_dataloader(
-                dataset=text_processor.get_dev_dataset(self.config.dev_batch_size),
-                batch_size=self.config.dev_batch_size,
-                shuffle=self.config.shuffle,
-                collate_fn=self.convert_examples_to_features,
-            )
-            self.test_dataloader = self.create_dataloader(
-                dataset=text_processor.get_test_dataset(self.config.test_batch_size),
-                batch_size=self.config.test_batch_size,
-                shuffle=self.config.shuffle,
-                collate_fn=self.convert_examples_to_features,
-            )
+        self.train_dataloader = self.create_dataloader(
+            dataset=text_processor.get_train_dataset(self.config.train_batch_size),
+            batch_size=self.config.train_batch_size,
+            shuffle=self.config.shuffle,
+            collate_fn=self.convert_examples_to_features,
+        )
+        self.dev_dataloader = self.create_dataloader(
+            dataset=text_processor.get_dev_dataset(self.config.dev_batch_size),
+            batch_size=self.config.dev_batch_size,
+            shuffle=self.config.shuffle,
+            collate_fn=self.convert_examples_to_features,
+        )
+        self.test_dataloader = self.create_dataloader(
+            dataset=text_processor.get_test_dataset(self.config.test_batch_size),
+            batch_size=self.config.test_batch_size,
+            shuffle=self.config.shuffle,
+            collate_fn=self.convert_examples_to_features,
+        )
 
 
         # 3. init model related
@@ -270,32 +240,12 @@ class Trainer:
         self.train_bar: tqdm = None
 
 
-    def create_DDP_dataloader(self, dataset: Dataset, batch_size, collate_fn, shuffle) -> DataLoader:
-        self.config.sampler = torch.utils.data.distributed.DistributedSampler(dataset)
-        if self.config.is_use_DDP is True:
-            return DataLoader(
-                dataset,
-                batch_size=batch_size,
-                shuffle=shuffle, # self.config.shuffle,
-                collate_fn=collate_fn,
-                sampler=self.config.sampler
-            )
-        else:
-            return DataLoader(
-                dataset,
-                batch_size=batch_size,
-                shuffle=shuffle, # self.config.shuffle,
-                collate_fn=collate_fn,
-                # sampler=torch.utils.data.distributed.DistributedSampler(dataset)
-            )
-
     def create_dataloader(self, dataset: Dataset, batch_size, collate_fn, shuffle) -> DataLoader:
         return DataLoader(
             dataset,
             batch_size=batch_size,
             shuffle=shuffle, # self.config.shuffle,
             collate_fn=collate_fn,
-            # sampler=torch.utils.data.distributed.DistributedSampler(dataset)
         )
 
     def convert_examples_to_features(self, examples: List[TextInputExample]):
@@ -499,10 +449,7 @@ class Trainer:
             pass
         else:
             os.makedirs(path)
-        if self.config.is_use_DDP is True:
-            torch.save(self.model.module.state_dict(), path+'/checkpoint_best.pt')
-        else:
-            torch.save(self.model.state_dict(), path+'/checkpoint_best.pt')
+        torch.save(self.model.state_dict(), path+'/checkpoint_best.pt')
 
     def train(self):
         """the main train epoch"""
@@ -517,8 +464,6 @@ class Trainer:
         self.on_train_start()
         for _ in range(self.config.epochs):            
             self.context_data.epoch += 1
-            if self.config.is_use_DDP is True:
-                self.config.sampler.set_epoch(self.context_data.epoch)
             self.train_epoch()
 
             self.on_epoch_end()
@@ -762,26 +707,7 @@ if __name__ == "__main__":
     config: Config = Config().parse_args()
     
     reset_config_parse(config)
-
-    if config.is_use_DDP is True:
-        # 新增1:依赖
-        import torch.distributed as dist
-        from torch.nn.parallel import DistributedDataParallel as DDP
-
-        # # 新增：从外面得到local_rank参数
-        # import argparse
-        # parser = argparse.ArgumentParser()
-        # parser.add_argument("--local_rank", default=-1)
-        # FLAGS = parser.parse_args()
-        # local_rank = FLAGS.local_rank
-        local_rank = config.local_rank
-
-        # print(local_rank)
-
-        # 新增：DDP backend初始化
-        torch.cuda.set_device('cuda:'+str(local_rank))
-        dist.init_process_group(backend='nccl')  # nccl是GPU设备上最快、最推荐的后端
-    
+        
     # set_my_seed(config.seed)
     if os.path.exists(config.mode_mode_path_dataset):
         pass

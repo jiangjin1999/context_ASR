@@ -6,16 +6,18 @@ python model-trainer.py \
         --dev_batch_size 40 \
         --test_batch_size 20 \
         --is_use_knn \
+        --is_add_sos_eos \
         --is_from_ckpt \
         --max_seq_length 40 \
         --is_shuffle_knn
-# export CUDA_VISIBLE_DEVICES=2
-# python model-trainer.py \
-#         --current_dataset HKUST \
-#         --train_batch_size 50 \
-#         --dev_batch_size 22 \
-#         --test_batch_size 24 \
-#         --is_use_knn \
-#         --is_from_ckpt \
-#         --max_seq_length 80 \
-#         --is_shuffle_knn
+export CUDA_VISIBLE_DEVICES=2
+python model-trainer.py \
+        --current_dataset HKUST \
+        --train_batch_size 50 \
+        --dev_batch_size 22 \
+        --test_batch_size 24 \
+        --is_use_knn \
+        --is_add_sos_eos \
+        --is_from_ckpt \
+        --max_seq_length 80 \
+        --is_shuffle_knn

@@ -78,7 +78,6 @@ class TextDataProcessor(DataProcessor):
                 # data_doc.append(data_doc_tmp)# 得到每个doc的list
                 # assert len(data_doc) in [340,20,40]
                 examples = self.knn_doc_process(data_doc)
-                    
             else:
                 if 'LIBRISPEECH' in file:
                     # print('data processor for librispeech')
@@ -87,7 +86,6 @@ class TextDataProcessor(DataProcessor):
                     examples = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[1], item.strip().split(' ')[2]) for item in data]
                 else:
                     examples = [TextInputExample(item.strip().split('\t')[0], item.strip().split('\t')[1], item.strip().split('\t')[2]) for item in data]
-            # return example
             # examples = examples[0:150]
             return examples
     
@@ -95,7 +93,6 @@ class TextDataProcessor(DataProcessor):
         doc_num = len(doc_list)
         # 给每个doc 补全到SEGMENTS的倍数--我们设置subsequence均为 一个句子，所以，无需补全为倍数
         # white_example = TextInputExample("white_utt", "空白案例。", "空白案例。") # 如果报错，可以统一修改为。
-        
         # doc_list = [doc_item+[white_example for _ in range(self.SEGMENTS-len(doc_item)%self.SEGMENTS)] for doc_item in doc_list]
 
         # 把所有的doc 按照一种策略-总是给当前最短的那一个，分配给batch size个 list

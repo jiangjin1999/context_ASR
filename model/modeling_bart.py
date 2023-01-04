@@ -79,17 +79,6 @@ depth: int = 6 # transfromer block的个数
 # Base model docstring
 _EXPECTED_OUTPUT_SHAPE = [1, 8, 768]
 
-# SequenceClassification docstring
-_CHECKPOINT_FOR_SEQUENCE_CLASSIFICATION = "valhalla/bart-large-sst2"
-_SEQ_CLASS_EXPECTED_LOSS = 0.0
-_SEQ_CLASS_EXPECTED_OUTPUT = "'POSITIVE'"
-
-# QuestionAsnwering docstring
-_CHECKPOINT_FOR_QA = "valhalla/bart-large-finetuned-squadv1"
-_QA_EXPECTED_LOSS = 0.59
-_QA_EXPECTED_OUTPUT = "' nice puppet'"
-
-
 BART_PRETRAINED_MODEL_ARCHIVE_LIST = [
     "facebook/bart-large",
     # see all BART models at https://huggingface.co/models?filter=bart
@@ -1664,8 +1653,6 @@ class BartForContextCorretion(BartPretrainedModel):
     def __init__(
         self, 
         config: BartConfig,
-        # knn_memorizing_layers = None,
-        # knn_memories_directory = None,
         ):
         super().__init__(config)
         self.model = BartModel(config)
@@ -1681,7 +1668,7 @@ class BartForContextCorretion(BartPretrainedModel):
         knn_memorizing_layers = cast_tuple(knn_memorizing_layers)
         knn_memorizing_layers = tuple(filter(lambda i: i in valid_layers, knn_memorizing_layers))
         
-        self.knn_memories_directory = knn_memories_directory
+        # self.knn_memories_directory = knn_memories_directory
         self.knn_memorizing_layers = unique(knn_memorizing_layers)
         self.num_knn_memorizing_layers = len(knn_memorizing_layers)
         self.max_knn_memories = max_knn_memories
@@ -1691,8 +1678,8 @@ class BartForContextCorretion(BartPretrainedModel):
             max_memories = self.max_knn_memories,
             multiprocessing = False
         )
-        self.clear_memories_on_sos_token_id = 109 #33
-        self.clear_memories_on_eos_token_id = 110 #34
+        self.clear_memories_on_sos_token_id = 108 
+        self.clear_memories_on_eos_token_id = None
         self.config  = config
 
     def get_encoder(self):
@@ -1725,6 +1712,7 @@ class BartForContextCorretion(BartPretrainedModel):
     def create_knn_memories(
         self,
         mode,
+        knn_memories_directory,
         *,
         batch_size
     ):
@@ -1732,22 +1720,23 @@ class BartForContextCorretion(BartPretrainedModel):
             mode=mode,
             batch_size = batch_size,
             num_memory_layers = self.num_knn_memorizing_layers,
-            memories_directory = self.knn_memories_directory,
+            memories_directory = knn_memories_directory,
         )(**self.knn_mem_kwargs) # {'dim': 64, 'max_memories': 7680, 'multiprocessing': False}
 
     @contextmanager
     def knn_memories_context(
         self,
         mode,
+        knn_memories_directory,
         **kwargs
     ):  
         
-        knn_dir = Path(self.knn_memories_directory)
+        knn_dir = Path(knn_memories_directory)
         knn_dir.mkdir(exist_ok = True, parents = True)
         lock = FileLock(str(knn_dir / 'mutex'))
 
         with lock:
-            knn_memories = self.create_knn_memories(mode, **kwargs)
+            knn_memories = self.create_knn_memories(mode, knn_memories_directory, **kwargs)
             yield knn_memories
             knn_memories.cleanup()
 

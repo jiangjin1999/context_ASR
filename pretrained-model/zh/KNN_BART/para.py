@@ -4,7 +4,7 @@ path = "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/con
 paras = torch.load(path)
 
 
-list_new = ['decoder.layers.3.knn_attn.q_proj.bias', 'decoder.layers.3.knn_attn.k_proj.weight', 'decoder.layers.3.knn_attn.v_proj.bias', 'decoder.layers.3.knn_attn.v_proj.weight', 'decoder.layers.3.knn_attn.k_proj.bias', 'decoder.layers.3.knn_attn.out_proj.weight', 'decoder.layers.3.knn_attn.q_proj.weight', 'decoder.layers.3.knn_attn.out_proj.bias']
+list_new = ['model.decoder.layers.5.knn_attn.q_proj.bias', 'model.decoder.layers.5.knn_attn.k_proj.weight', 'model.decoder.layers.5.knn_attn.v_proj.bias', 'model.decoder.layers.5.knn_attn.v_proj.weight', 'model.decoder.layers.5.knn_attn.k_proj.bias', 'model.decoder.layers.5.knn_attn.out_proj.weight', 'model.decoder.layers.5.knn_attn.q_proj.weight', 'model.decoder.layers.5.knn_attn.out_proj.bias']
 
 list_need = [item.replace('knn_attn','self_attn') for item in list_new]
 

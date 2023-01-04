@@ -1,6 +1,6 @@
 {
   "is_use_knn": true,
-  "knn_memorizing_layers": 5,
+  "knn_memorizing_layers": 4,
   "activation_dropout": 0.1,
   "activation_function": "gelu",
   "add_bias_logits": false,

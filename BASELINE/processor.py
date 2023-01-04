@@ -63,8 +63,10 @@ class TextDataProcessor(DataProcessor):
             if 'LIBRISPEECH' in file:
                 # print('data processor for librispeech')
                 example = [TextInputExample(self.en_utt_process(item.strip().split('|')[0]), item.strip().split('|')[2], item.strip().split('|')[1]) for item in data]
-            else:
+            elif 'AISHELL' in file:
                 example = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[2], item.strip().split(' ')[1]) for item in data]
+            elif 'HKUST' in file:
+                example = [TextInputExample(item.strip().split('\t')[0], item.strip().split('\t')[2], item.strip().split('\t')[1]) for item in data]
             # import random
             # a = example
             # example = random.shuffle(a)

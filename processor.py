@@ -83,8 +83,10 @@ class TextDataProcessor(DataProcessor):
                 if 'LIBRISPEECH' in file:
                     # print('data processor for librispeech')
                     examples = [TextInputExample(self.en_utt_process(item.strip().split('|')[0]), item.strip().split('|')[1], item.strip().split('|')[2]) for item in data]
-                else:
+                elif "AISHELL-1" in file:
                     examples = [TextInputExample(item.strip().split(' ')[0], item.strip().split(' ')[1], item.strip().split(' ')[2]) for item in data]
+                else:
+                    examples = [TextInputExample(item.strip().split('\t')[0], item.strip().split('\t')[1], item.strip().split('\t')[2]) for item in data]
             # return example
             # examples = examples[0:150]
             return examples
@@ -149,8 +151,8 @@ class TextDataProcessor(DataProcessor):
             for item in doc_item_list:
                 item[0].lab = '$' + item[0].lab
                 item[0].rec = '$' + item[0].rec
-                item[-1].lab = '%' + item[-1].lab
-                item[-1].rec = '%' + item[-1].rec
+                # item[-1].lab = '%' + item[-1].lab
+                # item[-1].rec = '%' + item[-1].rec
                 doc_item_list_output = doc_item_list_output + item
         else:
             for item in doc_item_list:

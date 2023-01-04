@@ -61,13 +61,13 @@ _CONFIG_FOR_DOC = "BartConfig"
 _TOKENIZER_FOR_DOC = "BartTokenizer"
 
 # KNN Code:
-knn_memorizing_layers = (4, 5)
+# knn_memorizing_layers = (4, 5)
 _num_retrieved_memories_K = 32
-knn_memories_directory = '.tmp/baseline.memories/'
+# knn_memories_directory = '.tmp/baseline.memories/'
 
 # knn_memories_directory = '.tmp/knn.memories/'
 # knn_memories_directory = '.tmp/knn.ckpt.memories/'
-# knn_memories_directory = '.tmp/knn.memories.shuffle/'
+knn_memories_directory = '.tmp/knn.memories.shuffle/'
 # knn_memories_directory = '.tmp/knn.ckpt.memories.shuffle/'
 
 max_knn_memories = 7680
@@ -1751,21 +1751,32 @@ class BartForContextCorretion(BartPretrainedModel):
             yield knn_memories
             knn_memories.cleanup()
 
-    def clear_memory(self, x, token_id, knn_memories):
+    def clear_memory(self, x, decoder_input_ids, token_id, knn_memories):
         """ clears the KNN memories based on if the batch row contains the specified token id """
         """ for auto-clearing KNN memories based on start and end of strings """
+        if x is not None:
+            clear_memory = (x == token_id).any(dim = -1)
 
-        clear_memory = (x == token_id).any(dim = -1)
+            batch_indices = clear_memory.nonzero(as_tuple = True)
+            batch_indices = batch_indices[0] 
+            batch_indices_to_clear = batch_indices.tolist()
 
-        batch_indices = clear_memory.nonzero(as_tuple = True)
-        batch_indices = batch_indices[0] 
-        batch_indices_to_clear = batch_indices.tolist()
+            if len(batch_indices_to_clear) == 0:
+                return
 
-        if len(batch_indices_to_clear) == 0:
-            return
+            knn_memories.clear_memory(batch_indices_to_clear)
+        else:
+            x = decoder_input_ids[0::4]
+            clear_memory = (x == token_id).any(dim = -1)
 
-        knn_memories.clear_memory(batch_indices_to_clear)
+            batch_indices = clear_memory.nonzero(as_tuple = True)
+            batch_indices = batch_indices[0] 
+            batch_indices_to_clear = batch_indices.tolist()
 
+            if len(batch_indices_to_clear) == 0:
+                return
+            
+            knn_memories.clear_memory(batch_indices_to_clear)
 
     @add_start_docstrings_to_model_forward(BART_INPUTS_DOCSTRING)
     @replace_return_docstrings(output_type=Seq2SeqLMOutput, config_class=_CONFIG_FOR_DOC)
@@ -1816,8 +1827,8 @@ class BartForContextCorretion(BartPretrainedModel):
         if self.config.is_use_knn:                
             assert all([memory.num_indices == batch_size for memory in decoder_knn_memories]), f'you passed in an input with batch size {input_ids.shape[0]} but your memories were not instantiated with that number of KNN indices'
                     
-            if exists(self.clear_memories_on_sos_token_id) and self.config.is_add_sos_eos:
-                self.clear_memory(input_ids, self.clear_memories_on_sos_token_id,decoder_knn_memories)
+            if exists(self.clear_memories_on_sos_token_id): # and False:
+                self.clear_memory(input_ids, decoder_input_ids,self.clear_memories_on_sos_token_id,decoder_knn_memories)
 
         outputs = self.model(
             input_ids,
@@ -1841,7 +1852,7 @@ class BartForContextCorretion(BartPretrainedModel):
         lm_logits = self.lm_head(outputs[0]) + self.final_logits_bias
         
         if self.config.is_use_knn:                
-            if exists(self.clear_memories_on_eos_token_id) and self.config.is_add_sos_eos:
+            if exists(self.clear_memories_on_eos_token_id) and False:
                 self.clear_memory(inputs_embeds, self.clear_memories_on_eos_token_id, decoder_knn_memories)
 
         masked_lm_loss = None

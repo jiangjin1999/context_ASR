@@ -24,6 +24,7 @@ pretrained-model/en/BART/*.bin
 pretrained-model/zh/BART/*.bin
 pretrained-model/zh/KNN_BART/pytorch_model.bin
 pretrained-model/checkpoint/AISHELL-1/*bin
+pretrained-model/checkpoint/HKUST/*.bin
 
 
 

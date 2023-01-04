@@ -52,14 +52,14 @@ class Config(Tap):
 
     # KNN Code  
     # batch_size 的设定，如果原有baseline batch为100，那train为100，test dev doc的个数若小于100，则为为doc个数
-    train_batch_size: int = 100
-    dev_batch_size: int = 40
-    test_batch_size: int = 20
+    train_batch_size: int = 50
+    dev_batch_size: int = 22
+    test_batch_size: int = 24
     is_use_knn: bool = True
     is_from_ckpt: bool = False
     is_shuffle_knn: bool = False
     SEGMENTS: int = 1 #一个subsequence包含几个句子
-    max_seq_length: int = 40 # 一个句子的max length 是
+    max_seq_length: int = 80 # 一个句子的max length 是
     is_add_sos_eos: bool = True
     
     
@@ -70,7 +70,7 @@ class Config(Tap):
     is_use_DDP:bool = False
     
 
-    current_dataset: str = 'AISHELL-1'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100'#'AIDATATANG' #['AISHELL-1', 'AIDATATANG', 'thchs'][0]
+    current_dataset: str = 'HKUST'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100'#'AIDATATANG' #['AISHELL-1', 'AIDATATANG', 'thchs'][0]
     is_pretrained: bool = True
     language: str = 'en'
     if current_dataset in ['AISHELL-1', 'HKUST', 'thchs']:
@@ -119,7 +119,7 @@ class Config(Tap):
     num_batch_per_evaluation: int = 10
 
     # 模型相关 参数配置
-    early_stop = EarlyStopping(patience=5)
+    early_stop = EarlyStopping(patience=7)
     device: str = 'cuda'
     metric: str = 'cer'
     if language == 'en': metric = 'wer'
@@ -782,7 +782,7 @@ if __name__ == "__main__":
         torch.cuda.set_device('cuda:'+str(local_rank))
         dist.init_process_group(backend='nccl')  # nccl是GPU设备上最快、最推荐的后端
     
-    set_my_seed(config.seed)
+    # set_my_seed(config.seed)
     if os.path.exists(config.mode_mode_path_dataset):
         pass
     else:

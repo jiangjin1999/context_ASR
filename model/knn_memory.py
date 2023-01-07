@@ -114,7 +114,7 @@ class KNN():
         if not self.is_trained:
             return np.full((x.shape[0], topk), -1)
 
-        distances, indices = self.index.search(x, k = topk)
+        distances, indices = self.index.search(x, k = topk) # distance: 960 32
 
         if increment_hits and self.keep_stats:
             hits = count_intersect(self.ids, rearrange(indices, '... -> (...)'))
@@ -220,8 +220,8 @@ class KNNMemory():
         increment_hits = True,
         increment_age = True
     ):
-        check_shape(queries, 'b ... d', d = self.dim, b = len(self.scoped_indices))
-        queries, ps = pack([queries], 'b * d')
+        check_shape(queries, 'b ... d', d = self.dim, b = len(self.scoped_indices)) # torch.Size([40, 12, 80, 64])
+        queries, ps = pack([queries], 'b * d') # torch.Size([40, 960, 64]), [torch.Size([12, 80])]
 
         device = queries.device
         queries = queries.detach().cpu().numpy()
@@ -234,11 +234,11 @@ class KNNMemory():
         # parallelize faiss search
 
         @delayed
-        def knn_search(knn, query):
+        def knn_search(knn, query): # query.shape: 960,64 # knn batch size 个knn中的一个
             return knn.search(query, topk, nprobe, increment_hits = increment_hits, increment_age = increment_age)
 
         fetched_indices = Parallel(n_jobs = self.n_jobs)(knn_search(*args) for args in zip(knns, queries))
-
+        # 40,960,32
         # get all the memory key / values from memmap 'database'
         # todo - remove for loop below
 

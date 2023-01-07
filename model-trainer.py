@@ -38,16 +38,18 @@ class Config(Tap):
 
     # KNN Code  
     # batch_size 的设定，如果原有baseline batch为100，那train为100，test dev doc的个数若小于100，则为为doc个数
-    train_batch_size: int = 50
-    dev_batch_size: int = 22
-    test_batch_size: int = 24
+    train_batch_size: int = 80
+    dev_batch_size: int = 40
+    test_batch_size: int = 20
     
-    current_dataset: str = 'HKUST'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100''
-    is_use_knn: bool = True
+    current_dataset: str = 'AISHELL-1'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100''
+    is_use_knn: bool = False
     is_from_ckpt: bool = False
     is_shuffle_knn: bool = False
-    max_seq_length: int = 80 # 一个句子的max length 是
+    max_seq_length: int = 40 # 一个句子的max length 是
     is_add_sos_eos: bool = False
+    is_random_vector: bool = False
+    is_use_threshold: bool = False
  
     language: str = 'en'
     is_zh: bool = False
@@ -263,10 +265,17 @@ class Trainer:
         
     def train(self):
         """the main train epoch"""
-        logger.info('start training ...')
-        logger.info(f'  num example = {len(self.train_dataloader)}')
-        logger.info(f'  num epochs = {self.config.epochs}')
-        logger.info(f'  total optimization step = {self.config.max_train_steps}')
+        
+        if os.path.exists(self.config.best_model_dir):
+            logger.info('+++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+            logger.info(f"Resumed from checkpoint: {self.config.best_model_dir}")
+            logger.info('+++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+            self.model.load_state_dict(torch.load(self.config.best_model_dir+'checkpoint_best.pt'), strict=True)
+        else:
+            logger.info('start training ...')
+            logger.info(f'  num example = {len(self.train_dataloader)}')
+            logger.info(f'  num epochs = {self.config.epochs}')
+            logger.info(f'  total optimization step = {self.config.max_train_steps}')
 
         self.on_train_start()
         for _ in range(self.config.epochs):            
@@ -321,6 +330,7 @@ class Trainer:
                     input_ids=input_ids, 
                     labels=labels,
                     decoder_knn_memories = knn_memories,
+                    decoder_TrainerConfig  = self.config,
                     )
 
                 self.context_data.loss = output.loss.sum().detach().cpu().numpy().item()
@@ -370,7 +380,11 @@ class Trainer:
                     
                     max_token = input_ids.shape[1]
                     generated_tokens: Seq2SeqLMOutput = self.model.generate(
-                        input_ids=input_ids, max_length=max_token, decoder_knn_memories = knn_memories)
+                        input_ids=input_ids, 
+                        max_length=max_token, 
+                        decoder_knn_memories = knn_memories,
+                        decoder_TrainerConfig  = self.config,
+                        )
                     
                     generated_tokens = generated_tokens.detach().cpu().numpy()
                     labels = labels.detach().cpu().numpy() 
@@ -462,7 +476,11 @@ class Trainer:
                     
                     max_token = input_ids.shape[1]
                     generated_tokens: Seq2SeqLMOutput = self.model.generate(
-                        input_ids=input_ids, max_length=max_token, decoder_knn_memories = knn_memories)
+                        input_ids=input_ids, 
+                        max_length=max_token, 
+                        decoder_knn_memories = knn_memories,
+                        decoder_TrainerConfig  = self.config,
+                        )
                     
                     generated_tokens = generated_tokens.detach().cpu().numpy()
                     labels = labels.detach().cpu().numpy() 
@@ -582,6 +600,9 @@ def reset_config_parse(config):
     # 讲 config 中所有 由 if修改的变量 和 由其他变量定义的变量 在该函数内重新定义。
     # if config.is_pretrained is True:
         # config.model_type = 'pretrained-'
+    # if config.is_random_vector:
+    #     config.model_type = config.model_type + 'Other-test/random-vector/'
+    #     config.knn_memories_directory = '.tmp/knn.ckpt.memories' + 'test-random-vector'
     if config.is_use_knn:
         if config.is_from_ckpt:
             config.model_type = config.model_type + 'T-model-knn-ckpt' 
@@ -595,22 +616,31 @@ def reset_config_parse(config):
         config.knn_memories_directory = config.knn_memories_directory + '/'
     else:
         config.model_type = config.model_type + 'T-model-baseline'
-        config.knn_memories_directory = '.tmp/baseline.memories/'
+        config.knn_memories_directory = '.tmp/baseline.memories/' 
+        
+    if config.is_random_vector:
+        config.model_type = 'Other-test/random-vector/' + config.model_type
+        config.knn_memories_directory = 'Other-test/random-vector/' + config.knn_memories_directory
+    # if config.:
+    #     config.model_type = config.model_type + 'test-random-vector'
     
     if config.is_shuffle_knn or config.is_use_knn is False:
         config.shuffle = True
+        
+    if config.current_dataset in ['AISHELL-1', 'HKUST']:
+        config.is_zh = True
+        config.language = 'zh'
+    if config.current_dataset in ['LIBRISPEECH_CLEAN', 'LIBRISPEECH_OTHER']:
+        config.is_zh = False
+        config.language = ''
     
     config.mode_mode_path: str = config.pwd + config.model_type
-    config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.current_dataset
+    config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.language+ '-' +config.current_dataset
     
     config.best_model_dir: str = config.mode_mode_path_dataset + '/model-checkpoint/'
     config.test_result_dir: str = config.mode_mode_path_dataset + '/result/'
     config.log_path: str = config.mode_mode_path_dataset + '/log/'
     config.tensorboard_path: str = config.mode_mode_path_dataset + '/tensorboard/' 
-
-    if config.current_dataset in ['AISHELL-1', 'HKUST']:
-        config.is_zh = True
-        config.language = 'zh'
 
     config.text_data_dir: str = config.pwd +'data/'+ config.language 
     
@@ -645,6 +675,7 @@ if __name__ == "__main__":
     elif config.language=='zh': # Follow CPT Model Card: https://huggingface.co/fnlp/bart-base-chinese
         TOKENIZER = BertTokenizer.from_pretrained(config.pretrained_model)
 
+
     trainer = Trainer(
         config,
         text_processor=TextDataProcessor(
@@ -653,9 +684,11 @@ if __name__ == "__main__":
         model=MODEL_TYPE,
         metric=load_metric(config.metric)
     )
+    
     if config.mode == 'train':
-        logger.add(os.path.join(config.log_path, 'train.'+config.current_dataset+'.T-model-log.txt'))    
-        logger.info(config)
+        logger.add(os.path.join(config.log_path, 'train.'+config.current_dataset+'.T-model-log.txt')) 
+        if not os.path.exists(config.best_model_dir):    # resume from checkpoint, not re log the config information
+            logger.info(config)
         trainer.train()
     elif config.mode == 'test':
         logger.add(os.path.join(config.log_path, 'test.'+config.current_dataset+'.T-model-log.txt'))

@@ -1,4 +1,4 @@
-2023-01-04 22:25:09.332 | INFO     | __main__:<module>:658 - {'Model_config': BartConfig {
+2023-01-07 17:21:00.733 | INFO     | __main__:<module>:687 - {'Model_config': BartConfig {
   "_name_or_path": "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/BART",
   "activation_dropout": 0.1,
   "activation_function": "gelu",
@@ -76,48 +76,46 @@
 }
 ,
  'SEGMENTS': 1,
- 'best_model_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/HKUST/model-checkpoint/',
- 'current_dataset': 'HKUST',
- 'dev_batch_size': 22,
+ 'best_model_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle-test-random-vector/zh-AISHELL-1/model-checkpoint/',
+ 'current_dataset': 'AISHELL-1',
+ 'dev_batch_size': 40,
  'device': 'cuda',
- 'early_stop': <utils.EarlyStopping object at 0x7fa910bbabe0>,
+ 'early_stop': <utils.EarlyStopping object at 0x7ff869156f40>,
  'early_stop_flag': False,
  'epochs': 100,
  'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
  'is_add_sos_eos': True,
  'is_from_ckpt': False,
  'is_pretrained': True,
- 'is_shuffle_knn': False,
+ 'is_random_vector': True,
+ 'is_shuffle_knn': True,
  'is_use_knn': True,
+ 'is_use_threshold': False,
  'is_zh': True,
- 'knn_memories_directory': '.tmp/knn.memories/',
+ 'knn_memories_directory': '.tmp/knn.memories.shuffle/',
  'language': 'zh',
  'learning_rate': 5e-05,
- 'log_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/HKUST/log/',
+ 'log_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle-test-random-vector/zh-AISHELL-1/log/',
  'lr_scheduler_type': 'linear',
- 'max_seq_length': 80,
- 'max_train_steps': 330700,
+ 'max_seq_length': 40,
+ 'max_train_steps': 176400,
  'metric': 'cer',
  'mode': 'train',
- 'mode_mode_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn',
- 'mode_mode_path_dataset': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/HKUST',
- 'model_type': 'T-model-knn',
- 'num_warmup_steps': 3307,
+ 'mode_mode_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle-test-random-vector',
+ 'mode_mode_path_dataset': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle-test-random-vector/zh-AISHELL-1',
+ 'model_type': 'T-model-knn-shuffle-test-random-vector',
+ 'num_warmup_steps': 1764,
  'pretrained_model': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/KNN_BART',
  'pwd': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/',
  'seed': 2022,
- 'shuffle': False,
- 'tensorboard_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/HKUST/tensorboard/',
- 'test_batch_size': 24,
- 'test_result_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/HKUST/result/',
+ 'shuffle': True,
+ 'tensorboard_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle-test-random-vector/zh-AISHELL-1/tensorboard/',
+ 'test_batch_size': 20,
+ 'test_result_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn-shuffle-test-random-vector/zh-AISHELL-1/result/',
  'text_data_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/data/zh',
- 'train_batch_size': 50,
+ 'train_batch_size': 80,
  'weight_decay': 0.02}
-2023-01-04 22:25:09.615 | INFO     | __main__:train:266 - start training ...
-2023-01-04 22:25:09.616 | INFO     | __main__:train:267 -   num example = 3307
-2023-01-04 22:25:09.616 | INFO     | __main__:train:268 -   num epochs = 100
-2023-01-04 22:25:09.616 | INFO     | __main__:train:269 -   total optimization step = 330700
-2023-01-04 22:25:09.617 | INFO     | __main__:train_epoch:303 - 
-
-2023-01-04 22:25:09.617 | INFO     | __main__:train_epoch:304 - =======================================
-2023-01-04 22:25:09.617 | INFO     | __main__:train_epoch:305 - training epoch<1> ...
+2023-01-07 17:21:01.080 | INFO     | __main__:train:275 - start training ...
+2023-01-07 17:21:01.080 | INFO     | __main__:train:276 -   num example = 1764
+2023-01-07 17:21:01.080 | INFO     | __main__:train:277 -   num epochs = 100
+2023-01-07 17:21:01.080 | INFO     | __main__:train:278 -   total optimization step = 176400

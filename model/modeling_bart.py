@@ -61,10 +61,12 @@ _CONFIG_FOR_DOC = "BartConfig"
 _TOKENIZER_FOR_DOC = "BartTokenizer"
 
 # KNN Code:
-# knn_memorizing_layers = (4, 5)
 _num_retrieved_memories_K = 32
-# knn_memories_directory = '.tmp/baseline.memories/'
+# is_random_vector: bool = True
+# is_use_threshold: bool = False
 
+
+# knn_memories_directory = '.tmp/baseline.memories/'
 # knn_memories_directory = '.tmp/knn.memories/'
 # knn_memories_directory = '.tmp/knn.ckpt.memories/'
 # knn_memories_directory = '.tmp/knn.memories.shuffle/'
@@ -382,6 +384,7 @@ class KNNBartAttention(nn.Module):
         
         KNN = True
         if KNN is True:
+            device = query_states.device
             # KNN Code:
             # calculate knn attention over memory, if index is passed in
             KNN_query_states = rearrange(query_states, 'b n (h d) -> b h n d', h = key_states.shape[1])
@@ -403,18 +406,37 @@ class KNNBartAttention(nn.Module):
                 # beam_memory_attention_mask_list = [knn_memory.search(item, self.num_retrieved_memories_K)[1] for item in beam_query_list]
                 
                 # decode 速度太慢了，考虑只search 一个 在beam search 时候。
-                beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
-                beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
+                if is_random_vector is True:
+                    tmp_shape = beam_query_list[0].shape
+                    tmp_research_rand_vector = torch.randn(tmp_shape[0], tmp_shape[1], tmp_shape[2], self.num_retrieved_memories_K, 2, tmp_shape[3]).to(device)
+                    tmp_research_rand_mask =  torch.rand(tmp_shape[0], tmp_shape[2], tmp_shape[2], 32) > 0 
+                    tmp_research_rand_mask = tmp_research_rand_mask.to(device)
+                    beam_memory_keyvalue_list = [tmp_research_rand_vector for _ in range(int(beam_num)) ]
+                    beam_memory_attention_mask_list = [tmp_research_rand_mask for _ in range(int(beam_num)) ]
+                else:
+                    beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
+                    beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
                 memory_keyvalue = torch.cat(beam_memory_keyvalue_list, dim=0)
                 memory_attention_mask = torch.cat(beam_memory_attention_mask_list, dim=0)
             else:
-                memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
+                if is_random_vector is True:
+                    memory_keyvalue = torch.randn(KNN_query_states.shape[0],KNN_query_states.shape[1],KNN_query_states.shape[2],  self.num_retrieved_memories_K, 2, KNN_query_states.shape[3]).to(device)
+                    memory_attention_mask = torch.rand(KNN_query_states.shape[0], KNN_query_states.shape[1], KNN_query_states.shape[2], 32) > 0 
+                    memory_attention_mask = memory_attention_mask.to(device)
+                else:
+                    memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
+                # memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
             # query_states.shape: torch.Size([8, 40, 768])
             # knn.shape: (8, 7680, 2, 64)
             # memory_keyvalue.shape: torch.Size([8, 40, 32, 2, 768])
             # memory_attention_mask.shape: torch.Size([8, 40, 32])
             
             memory_key, memory_value = memory_keyvalue.unbind(dim = -2)
+            
+            # if is_random_vector is True:
+            #     memory_key_idx = torch.randperm(memory_key.nelement())
+            #     memory_key = memory_key.contiguous().view(-1)[memory_key_idx].view(memory_key.shape)
+
             
             # KNN Code Part:
             KNN_key_states = torch.mean(key_states, dim=1, keepdim=False) # torch.Size([8, 12, 40, 64])--> torch.Size([8, 40, 64])
@@ -428,7 +450,10 @@ class KNNBartAttention(nn.Module):
                 beam_value_list = [KNN_value_states[i::int(beam_num),:,:] for i in range(int(beam_num))]
                 beam_new_kv_memories_list = [torch.stack((beam_key, beam_value), dim = -2).detach()  for beam_key, beam_value in zip(beam_key_list, beam_value_list) ]
                 if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0:
-                    knn_memory.add(beam_new_kv_memories_list[0])
+                    if is_random_vector is True:
+                        pass
+                    else:
+                        knn_memory.add(beam_new_kv_memories_list[0])
                 # [knn_memory.add(beam_new_kv_memories_item) for beam_new_kv_memories_item in beam_new_kv_memories_list if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0]
                 # if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0:
                 #     knn_memory.add(beam_new_kv_memories_list)
@@ -441,7 +466,10 @@ class KNNBartAttention(nn.Module):
                 new_kv_memories = torch.stack((KNN_key_states, KNN_value_states), dim = -2).detach()
 
                 if add_knn_memory and new_kv_memories.numel() > 0:
-                    knn_memory.add(new_kv_memories)
+                    if is_random_vector is True:
+                        pass
+                    else:
+                        knn_memory.add(new_kv_memories)
                 
             # KNN Code PART:
             # knn_memory_attn_weights = torch.bmm(query_states, KNN_memory_key.transpose(1, 2))
@@ -1790,6 +1818,7 @@ class BartForContextCorretion(BartPretrainedModel):
         return_dict: Optional[bool] = None,
         # KNN Code:
         decoder_knn_memories = None,
+        decoder_TrainerConfig = None,
     ) -> Union[Tuple, Seq2SeqLMOutput]:
         r"""
         labels (`torch.LongTensor` of shape `(batch_size, sequence_length)`, *optional*):
@@ -1800,7 +1829,13 @@ class BartForContextCorretion(BartPretrainedModel):
         Returns:
         """
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-
+        # is_random_vector: bool = True
+        # is_use_threshold: bool = False
+        global is_random_vector
+        is_random_vector = decoder_TrainerConfig.is_random_vector
+        global is_use_threshold
+        is_use_threshold = decoder_TrainerConfig.is_use_threshold
+        
         if labels is not None:
             if use_cache:
                 logger.warning("The `use_cache` argument is changed to `False` since `labels` is provided.")
@@ -1892,6 +1927,7 @@ class BartForContextCorretion(BartPretrainedModel):
             "cross_attn_head_mask": cross_attn_head_mask,
             "use_cache": use_cache,  # change this to avoid caching (presumably for debugging)
             "decoder_knn_memories": kwargs['decoder_knn_memories'],
+            "decoder_TrainerConfig":  kwargs['decoder_TrainerConfig'],
         }
 
     def prepare_decoder_input_ids_from_labels(self, labels: torch.Tensor):

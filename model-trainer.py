@@ -38,18 +38,23 @@ class Config(Tap):
 
     # KNN Code  
     # batch_size 的设定，如果原有baseline batch为100，那train为100，test dev doc的个数若小于100，则为为doc个数
-    train_batch_size: int = 35
-    dev_batch_size: int = 35
-    test_batch_size: int = 35
+    train_batch_size: int = 40
+    dev_batch_size: int = 22
+    test_batch_size: int = 24
     
-    current_dataset: str = 'LIBRISPEECH_OTHER' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
+    current_dataset: str = 'HKUST' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
     is_use_knn: bool = False
     is_from_ckpt: bool = False
     is_shuffle_knn: bool = False
-    max_seq_length: int = 100 # 一个句子的max length 是 
+    max_seq_length: int = 80 # 一个句子的max length 是 
     is_add_sos_eos: bool = False
+    
+    
     is_random_vector: bool = False
     is_use_threshold: bool = False
+    _knn_dis_threshold: float = 0.05
+    
+    is_adaptive_knn: bool = False
  
     language: str = 'en'
     is_zh: bool = False
@@ -624,6 +629,9 @@ def reset_config_parse(config):
     if config.is_random_vector:
         config.model_type = 'Other-test/random-vector/' + config.model_type
         config.knn_memories_directory = 'Other-test/random-vector/' + config.knn_memories_directory
+    if config.is_use_threshold:
+        config.model_type = 'Other-test/is_use_threshold/' + config.model_type
+        config.knn_memories_directory = 'Other-test/is_use_threshold/' + config.knn_memories_directory
     # if config.:
     #     config.model_type = config.model_type + 'test-random-vector'
     

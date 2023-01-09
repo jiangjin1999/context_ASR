@@ -65,14 +65,7 @@ _num_retrieved_memories_K = 32
 # is_random_vector: bool = True
 # is_use_threshold: bool = False
 
-
-# knn_memories_directory = '.tmp/baseline.memories/'
-# knn_memories_directory = '.tmp/knn.memories/'
-# knn_memories_directory = '.tmp/knn.ckpt.memories/'
-# knn_memories_directory = '.tmp/knn.memories.shuffle/'
-# knn_memories_directory = '.tmp/knn.ckpt.memories.shuffle/'
-
-max_knn_memories = 7680
+max_knn_memories = 65000 
 dim_head = 64
 depth: int = 6 # transfromer block的个数
 
@@ -414,8 +407,12 @@ class KNNBartAttention(nn.Module):
                     beam_memory_keyvalue_list = [tmp_research_rand_vector for _ in range(int(beam_num)) ]
                     beam_memory_attention_mask_list = [tmp_research_rand_mask for _ in range(int(beam_num)) ]
                 else:
-                    beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
-                    beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
+                    if is_use_threshold is True: #_knn_dis_threshold
+                        beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[0] for _ in range(int(beam_num)) ]
+                        beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[1] for _ in range(int(beam_num)) ]
+                    else:
+                        beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
+                        beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
                 memory_keyvalue = torch.cat(beam_memory_keyvalue_list, dim=0)
                 memory_attention_mask = torch.cat(beam_memory_attention_mask_list, dim=0)
             else:
@@ -424,7 +421,11 @@ class KNNBartAttention(nn.Module):
                     memory_attention_mask = torch.rand(KNN_query_states.shape[0], KNN_query_states.shape[1], KNN_query_states.shape[2], 32) > 0 
                     memory_attention_mask = memory_attention_mask.to(device)
                 else:
-                    memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
+                    if is_use_threshold is True:
+                        memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)
+                    else:
+                        memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
+                        
                 # memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
             # query_states.shape: torch.Size([8, 40, 768])
             # knn.shape: (8, 7680, 2, 64)
@@ -1831,10 +1832,13 @@ class BartForContextCorretion(BartPretrainedModel):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         # is_random_vector: bool = True
         # is_use_threshold: bool = False
+
         global is_random_vector
         is_random_vector = decoder_TrainerConfig.is_random_vector
         global is_use_threshold
         is_use_threshold = decoder_TrainerConfig.is_use_threshold
+        global _knn_dis_threshold
+        _knn_dis_threshold = decoder_TrainerConfig._knn_dis_threshold
         
         if labels is not None:
             if use_cache:

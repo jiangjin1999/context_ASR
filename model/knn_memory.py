@@ -106,6 +106,7 @@ class KNN():
         self,
         x,
         topk,
+        _knn_dis_threshold=None,
         nprobe = 8,
         return_distances = False,
         increment_hits = False,
@@ -114,8 +115,12 @@ class KNN():
         if not self.is_trained:
             return np.full((x.shape[0], topk), -1)
 
-        distances, indices = self.index.search(x, k = topk) # distance: 960 32
-
+        distances, indices = self.index.search(x, k = topk) # distance: 960 32 # length的每个head都会进行搜索一个32个 结果。
+        # distance:返回960 个 32个distance ，以及每一个在database中对应的index
+        # 加入 K 之外的阈值限制：
+        if _knn_dis_threshold is not None:
+            indices[distances < _knn_dis_threshold] = -1 # distances 中 小于阈值的 对应位置的indices设置为-1
+ 
         if increment_hits and self.keep_stats:
             hits = count_intersect(self.ids, rearrange(indices, '... -> (...)'))
             self.hits += hits
@@ -216,27 +221,32 @@ class KNNMemory():
         self,
         queries,
         topk,
+        _knn_dis_threshold=None,
         nprobe = 8,
         increment_hits = True,
         increment_age = True
     ):
+        # check 输入query 的第一个纬度为db的维度64，最后一个纬度为knnmemory 的维度
         check_shape(queries, 'b ... d', d = self.dim, b = len(self.scoped_indices)) # torch.Size([40, 12, 80, 64])
+        # head num-12 和 
         queries, ps = pack([queries], 'b * d') # torch.Size([40, 960, 64]), [torch.Size([12, 80])]
 
         device = queries.device
+        
         queries = queries.detach().cpu().numpy()
 
         all_masks = []
         all_key_values = []
-
+        # 把 40 层的 knnmemory 放在list中 list
         knns = [self.knns[i] for i in self.scoped_indices]
 
         # parallelize faiss search
 
         @delayed
         def knn_search(knn, query): # query.shape: 960,64 # knn batch size 个knn中的一个
-            return knn.search(query, topk, nprobe, increment_hits = increment_hits, increment_age = increment_age)
-
+        
+            return knn.search(query, topk, _knn_dis_threshold, nprobe, increment_hits = increment_hits, increment_age = increment_age)
+        # 这里暂时为非并行的，后续可对代码进行改进。 对每一个对knn和query 进行 search
         fetched_indices = Parallel(n_jobs = self.n_jobs)(knn_search(*args) for args in zip(knns, queries))
         # 40,960,32
         # get all the memory key / values from memmap 'database'
@@ -249,13 +259,18 @@ class KNNMemory():
             all_masks.append(torch.from_numpy(mask))
 
             key_values = self.db[batch_index, db_indices % self.max_memories]
+        
             all_key_values.append(torch.from_numpy(key_values))
 
+        
         all_masks = torch.stack(all_masks)
+        
         all_key_values = torch.stack(all_key_values)
+        
         all_key_values = all_key_values.masked_fill(~rearrange(all_masks, '... -> ... 1 1'), 0.)
 
         all_key_values, = unpack(all_key_values, ps, 'b * n kv d')
+        
         all_masks, = unpack(all_masks, ps, 'b * n')
 
         return all_key_values.to(device), all_masks.to(device)

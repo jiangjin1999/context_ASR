@@ -1,4 +1,6 @@
 {
+  "is_use_knn": false,
+  "knn_memorizing_layers":6,
   "_name_or_path": "bart-base",
   "activation_dropout": 0.1,
   "activation_function": "gelu",

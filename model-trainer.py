@@ -38,16 +38,16 @@ class Config(Tap):
 
     # KNN Code  
     # batch_size 的设定，如果原有baseline batch为100，那train为100，test dev doc的个数若小于100，则为为doc个数
-    train_batch_size: int = 80
-    dev_batch_size: int = 40
-    test_batch_size: int = 20
+    train_batch_size: int = 35
+    dev_batch_size: int = 35
+    test_batch_size: int = 35
     
-    current_dataset: str = 'AISHELL-1'#'LIBRISPEECH_OTHER'#'LIBRISPEECH'#'LIBRISPEECH_CLEAN_100''
-    is_use_knn: bool = False
+    current_dataset: str = 'LIBRISPEECH_OTHER' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
+    is_use_knn: bool = True
     is_from_ckpt: bool = False
     is_shuffle_knn: bool = False
-    max_seq_length: int = 40 # 一个句子的max length 是
-    is_add_sos_eos: bool = False
+    max_seq_length: int = 100 # 一个句子的max length 是 
+    is_add_sos_eos: bool = True
     is_random_vector: bool = False
     is_use_threshold: bool = False
  
@@ -56,6 +56,9 @@ class Config(Tap):
     if current_dataset in ['AISHELL-1', 'HKUST']:
         is_zh = True
         language = 'zh'
+    if current_dataset in ['LIBRISPEECH_CLEAN', 'LIBRISPEECH_OTHER']:
+        is_zh = False
+        language = 'en'
     metric: str = 'cer'
     if language == 'en': metric = 'wer'
  
@@ -632,7 +635,7 @@ def reset_config_parse(config):
         config.language = 'zh'
     if config.current_dataset in ['LIBRISPEECH_CLEAN', 'LIBRISPEECH_OTHER']:
         config.is_zh = False
-        config.language = ''
+        config.language = 'en'
     
     config.mode_mode_path: str = config.pwd + config.model_type
     config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.language+ '-' +config.current_dataset

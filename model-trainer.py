@@ -43,11 +43,11 @@ class Config(Tap):
     test_batch_size: int = 35
     
     current_dataset: str = 'LIBRISPEECH_OTHER' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
-    is_use_knn: bool = True
+    is_use_knn: bool = False
     is_from_ckpt: bool = False
     is_shuffle_knn: bool = False
     max_seq_length: int = 100 # 一个句子的max length 是 
-    is_add_sos_eos: bool = True
+    is_add_sos_eos: bool = False
     is_random_vector: bool = False
     is_use_threshold: bool = False
  

@@ -150,3 +150,35 @@
 
 2023-01-09 23:50:13.769 | INFO     | __main__:train_epoch:316 - =======================================
 2023-01-09 23:50:13.769 | INFO     | __main__:train_epoch:317 - training epoch<5> ...
+2023-01-10 00:26:13.455 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 00:26:13.455 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.03890492562834397
+2023-01-10 00:26:13.456 | INFO     | __main__:train_epoch:315 - 
+
+2023-01-10 00:26:13.456 | INFO     | __main__:train_epoch:316 - =======================================
+2023-01-10 00:26:13.456 | INFO     | __main__:train_epoch:317 - training epoch<6> ...
+2023-01-10 01:02:18.271 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 01:02:18.271 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.03875783706264134
+2023-01-10 01:02:18.272 | INFO     | __main__:train_epoch:315 - 
+
+2023-01-10 01:02:18.272 | INFO     | __main__:train_epoch:316 - =======================================
+2023-01-10 01:02:18.272 | INFO     | __main__:train_epoch:317 - training epoch<7> ...
+2023-01-10 01:38:24.428 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 01:38:24.428 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.0400448620125393
+2023-01-10 01:38:24.429 | INFO     | __main__:train_epoch:315 - 
+
+2023-01-10 01:38:24.429 | INFO     | __main__:train_epoch:316 - =======================================
+2023-01-10 01:38:24.429 | INFO     | __main__:train_epoch:317 - training epoch<8> ...
+2023-01-10 02:14:24.427 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 02:14:24.428 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.03960359631543143
+2023-01-10 02:14:24.428 | INFO     | __main__:train_epoch:315 - 
+
+2023-01-10 02:14:24.429 | INFO     | __main__:train_epoch:316 - =======================================
+2023-01-10 02:14:24.429 | INFO     | __main__:train_epoch:317 - training epoch<9> ...
+2023-01-10 02:50:30.658 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 02:50:30.658 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.04035742521465738
+2023-01-10 02:50:30.659 | INFO     | __main__:train:290 - early stopping on train epoch

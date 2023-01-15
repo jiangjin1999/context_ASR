@@ -411,6 +411,8 @@ class KNNBartAttention(nn.Module):
                         beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[0] for _ in range(int(beam_num)) ]
                         beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[1] for _ in range(int(beam_num)) ]
                     else:
+                        # beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[i], self.num_retrieved_memories_K)[0] for i in range(int(beam_num)) ]
+                        # beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[i], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
                         beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
                         beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
                 memory_keyvalue = torch.cat(beam_memory_keyvalue_list, dim=0)
@@ -550,7 +552,7 @@ class KNNBartAttention(nn.Module):
         memory_attn_output = einsum('b i j, b i j d -> b i d', memory_attn_probs, KNN_memory_value_states)
         # torch.Size([96, 40, 32]) * torch.Size([96, 40, 32, 64]) = torch.Size([96, 40, 64])
         
-        attn_output = local_attn_output + memory_attn_output
+        attn_output = local_attn_output + memory_attn_output # 此处可以加入gate改善。
         # attn_output = torch.bmm(attn_probs, value_states)
 
         if attn_output.size() != (bsz * self.num_heads, tgt_len, self.head_dim):
@@ -1707,7 +1709,7 @@ class BartForContextCorretion(BartPretrainedModel):
             max_memories = self.max_knn_memories,
             multiprocessing = False
         )
-        self.clear_memories_on_sos_token_id = 108 
+        self.clear_memories_on_sos_token_id = 108 #108 # 1629
         self.clear_memories_on_eos_token_id = None
         self.config  = config
 
@@ -1839,6 +1841,11 @@ class BartForContextCorretion(BartPretrainedModel):
         is_use_threshold = decoder_TrainerConfig.is_use_threshold
         global _knn_dis_threshold
         _knn_dis_threshold = decoder_TrainerConfig._knn_dis_threshold
+        global clear_memories_on_sos_token_id # #108 # 1629
+        if decoder_TrainerConfig.language == 'zh':
+            self.clear_memories_on_sos_token_id = 108
+        else:
+            self.clear_memories_on_sos_token_id = 1629
         
         if labels is not None:
             if use_cache:

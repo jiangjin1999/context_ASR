@@ -52,7 +52,7 @@ class Config(Tap):
     
     is_random_vector: bool = False
     is_use_threshold: bool = False
-    _knn_dis_threshold: float = 0.05
+    _knn_dis_threshold: float = 0
     
     is_adaptive_knn: bool = False
  
@@ -670,7 +670,7 @@ if __name__ == "__main__":
     
     reset_config_parse(config)
         
-    # set_my_seed(config.seed)
+    set_my_seed(config.seed)
     if os.path.exists(config.mode_mode_path_dataset):
         pass
     else:

@@ -157,3 +157,28 @@
 
 2023-01-09 22:18:50.629 | INFO     | __main__:train_epoch:316 - =======================================
 2023-01-09 22:18:50.629 | INFO     | __main__:train_epoch:317 - training epoch<6> ...
+2023-01-10 00:22:33.428 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 00:22:33.428 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.03897918658527617
+2023-01-10 00:22:33.429 | INFO     | __main__:train_epoch:315 - 
+
+2023-01-10 00:22:33.429 | INFO     | __main__:train_epoch:316 - =======================================
+2023-01-10 00:22:33.430 | INFO     | __main__:train_epoch:317 - training epoch<7> ...
+2023-01-10 02:33:29.733 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 02:33:29.734 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.03942046039567552
+2023-01-10 02:33:29.734 | INFO     | __main__:train_epoch:315 - 
+
+2023-01-10 02:33:29.735 | INFO     | __main__:train_epoch:316 - =======================================
+2023-01-10 02:33:29.735 | INFO     | __main__:train_epoch:317 - training epoch<8> ...
+2023-01-10 04:43:08.647 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 04:43:08.647 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.03978818857100831
+2023-01-10 04:43:08.648 | INFO     | __main__:train_epoch:315 - 
+
+2023-01-10 04:43:08.648 | INFO     | __main__:train_epoch:316 - =======================================
+2023-01-10 04:43:08.648 | INFO     | __main__:train_epoch:317 - training epoch<9> ...
+2023-01-10 06:55:30.077 | INFO     | __main__:on_epoch_end:355 - 
+
+2023-01-10 06:55:30.078 | INFO     | __main__:on_epoch_end:356 - dev/cer is 0.0404317128778407
+2023-01-10 06:55:30.078 | INFO     | __main__:train:290 - early stopping on train epoch

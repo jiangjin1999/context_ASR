@@ -38,16 +38,19 @@ class Config(Tap):
 
     # KNN Code  
     # batch_size 的设定，如果原有baseline batch为100，那train为100，test dev doc的个数若小于100，则为为doc个数
-    train_batch_size: int = 40
+    train_batch_size: int = 35
     dev_batch_size: int = 22
     test_batch_size: int = 24
     
     current_dataset: str = 'HKUST' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
-    is_use_knn: bool = False
+    is_use_knn: bool = True
     is_from_ckpt: bool = False
-    is_shuffle_knn: bool = False
+    is_shuffle_knn: bool = True
     max_seq_length: int = 80 # 一个句子的max length 是 
     is_add_sos_eos: bool = False
+    
+    gate_parameter: float = 0.5
+    _num_retrieved_memories_K: int = 64
     
     
     is_random_vector: bool = False
@@ -624,7 +627,7 @@ def reset_config_parse(config):
         config.knn_memories_directory = config.knn_memories_directory + '/'
     else:
         config.model_type = config.model_type + 'T-model-baseline'
-        config.knn_memories_directory = '.tmp/baseline.memories/' 
+        config.knn_memories_directory = '.tmp/baseline.memories.tmp/' 
         
     if config.is_random_vector:
         config.model_type = 'Other-test/random-vector/' + config.model_type
@@ -646,7 +649,8 @@ def reset_config_parse(config):
         config.language = 'en'
     
     config.mode_mode_path: str = config.pwd + config.model_type
-    config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.language+ '-' +config.current_dataset
+    config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.language+ '-' +config.current_dataset + '-K=' + config._num_retrieved_memories_K
+    config.knn_memories_directory = config.knn_memories_directory + config.current_dataset + '-K=' + config._num_retrieved_memories_K
     
     config.best_model_dir: str = config.mode_mode_path_dataset + '/model-checkpoint/'
     config.test_result_dir: str = config.mode_mode_path_dataset + '/result/'

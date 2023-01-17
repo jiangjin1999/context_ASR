@@ -61,7 +61,7 @@ _CONFIG_FOR_DOC = "BartConfig"
 _TOKENIZER_FOR_DOC = "BartTokenizer"
 
 # KNN Code:
-_num_retrieved_memories_K = 32
+_num_retrieved_memories_K = 64
 # is_random_vector: bool = True
 # is_use_threshold: bool = False
 
@@ -476,11 +476,13 @@ class KNNBartAttention(nn.Module):
                 
             # KNN Code PART:
             # knn_memory_attn_weights = torch.bmm(query_states, KNN_memory_key.transpose(1, 2))
-            knn_memory_attn_weights = einsum('b h i d, b h i j d -> b h i j', KNN_query_states, memory_key)
+            knn_memory_attn_weights = einsum('b h m n, b h v c j -> b h m v j', KNN_query_states, memory_key)
+            # knn_memory_attn_weights = 
             mask_value = -torch.finfo(knn_memory_attn_weights.dtype).max
-            knn_memory_attn_weights = knn_memory_attn_weights.masked_fill(~memory_attention_mask, mask_value)
+            memory_attention_mask = einsum('b h m j, b h v j -> b h m v j', memory_attention_mask, memory_attention_mask)
+            # knn_memory_attn_weights = knn_memory_attn_weights.masked_fill(~memory_attention_mask, mask_value)
             # torch.Size([8, 12, 40, 32])
-            knn_memory_attn_weights = rearrange(knn_memory_attn_weights, ' b h n d -> (b h) n d ')
+            knn_memory_attn_weights = rearrange(knn_memory_attn_weights, ' b h n d j-> (b h) n d j')
             # torch.Size([96, 40, 32])
             # if memory_attention_mask is not None:
             #     if memory_attention_mask.size() != (bsz, 1, tgt_len, src_len):
@@ -517,7 +519,7 @@ class KNNBartAttention(nn.Module):
             # torch.Size([96, 40, 40])
             
         # KNN Code:
-        attn_weights = torch.cat((knn_memory_attn_weights, attn_weights), dim=-1)
+        # attn_weights = torch.cat((attn_weights, knn_memory_attn_weights), dim=-1)
         
         attn_weights = nn.functional.softmax(attn_weights, dim=-1)
         # torch.Size([96, 40, 72])
@@ -540,18 +542,23 @@ class KNNBartAttention(nn.Module):
         else:
             attn_weights_reshaped = None
 
-        attn_probs = nn.functional.dropout(attn_weights, p=self.dropout, training=self.training)
+        attn_weights = nn.functional.dropout(attn_weights, p=self.dropout, training=self.training)
+        knn_memory_attn_weights = nn.functional.dropout(knn_memory_attn_weights, p=self.dropout, training=self.training)
         
-        local_attn_probs, memory_attn_probs = attn_probs[..., self.num_retrieved_memories_K:], attn_probs[..., :self.num_retrieved_memories_K]
+        # local_attn_probs, memory_attn_probs = attn_probs[..., self.num_retrieved_memories_K:], attn_probs[..., :self.num_retrieved_memories_K]
+        local_attn_probs, memory_attn_probs = attn_weights, knn_memory_attn_weights
         # torch.Size([96, 40, 40]) torch.Size([96, 40, 32])
         local_attn_output = torch.bmm(local_attn_probs, value_states)
         # torch.Size([96, 40, 64]) = torch.Size([96, 40, 40]) * torch.Size([96, 40, 64])
         KNN_memory_value_states = rearrange(memory_value, ' b h n d k -> (b h) n d k')
         # torch.Size([8, 12, 40, 32, 64]) --> 
+        memory_attn_output = einsum('b m m j, b m n j -> b m n j', memory_attn_probs, KNN_memory_value_states)
         # memory_attn_output = torch.bmm(memory_attn_probs, KNN_memory_value_states)
-        memory_attn_output = einsum('b i j, b i j d -> b i d', memory_attn_probs, KNN_memory_value_states)
+        memory_attn_output = torch.mean(memory_attn_output, dim=-1)
+        # memory_attn_output = einsum('b i j, b i j d -> b i d', memory_attn_probs, KNN_memory_value_states)
         # torch.Size([96, 40, 32]) * torch.Size([96, 40, 32, 64]) = torch.Size([96, 40, 64])
         
+        # attn_output = (1-gate_parameter) * local_attn_output + gate_parameter * memory_attn_output # 此处可以加入gate改善。
         attn_output = local_attn_output + memory_attn_output # 此处可以加入gate改善。
         # attn_output = torch.bmm(attn_probs, value_states)
 
@@ -1834,6 +1841,8 @@ class BartForContextCorretion(BartPretrainedModel):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
         # is_random_vector: bool = True
         # is_use_threshold: bool = False
+        global gate_parameter
+        gate_parameter = decoder_TrainerConfig.gate_parameter
 
         global is_random_vector
         is_random_vector = decoder_TrainerConfig.is_random_vector

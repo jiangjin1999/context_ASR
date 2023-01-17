@@ -43,9 +43,9 @@ class Config(Tap):
     test_batch_size: int = 24
     
     current_dataset: str = 'HKUST' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
-    is_use_knn: bool = True
+    is_use_knn: bool = False
     is_from_ckpt: bool = False
-    is_shuffle_knn: bool = True
+    is_shuffle_knn: bool = False
     max_seq_length: int = 80 # 一个句子的max length 是 
     is_add_sos_eos: bool = False
     
@@ -649,8 +649,8 @@ def reset_config_parse(config):
         config.language = 'en'
     
     config.mode_mode_path: str = config.pwd + config.model_type
-    config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.language+ '-' +config.current_dataset + '-K=' + config._num_retrieved_memories_K
-    config.knn_memories_directory = config.knn_memories_directory + config.current_dataset + '-K=' + config._num_retrieved_memories_K
+    config.mode_mode_path_dataset: str = config.mode_mode_path + '/' + config.language+ '-' +config.current_dataset + '-K=' + str(config._num_retrieved_memories_K)
+    config.knn_memories_directory = config.knn_memories_directory + config.current_dataset + '-K=' + str(config._num_retrieved_memories_K)
     
     config.best_model_dir: str = config.mode_mode_path_dataset + '/model-checkpoint/'
     config.test_result_dir: str = config.mode_mode_path_dataset + '/result/'

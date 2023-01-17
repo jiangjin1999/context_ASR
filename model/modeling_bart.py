@@ -357,6 +357,7 @@ class KNNBartAttention(nn.Module):
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
         """Input shape: Batch x Time x Channel"""
         "KNN attention 不进行cross attention"
+        self.num_retrieved_memories_K = _num_retrieved_memories_K
 
         # if key_value_states are provided this layer is used as a cross-attention layer
         # for the decoder
@@ -1855,6 +1856,9 @@ class BartForContextCorretion(BartPretrainedModel):
             self.clear_memories_on_sos_token_id = 108
         else:
             self.clear_memories_on_sos_token_id = 1629
+            
+        global _num_retrieved_memories_K 
+        _num_retrieved_memories_K = decoder_TrainerConfig._num_retrieved_memories_K
         
         if labels is not None:
             if use_cache:

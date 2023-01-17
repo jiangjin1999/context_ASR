@@ -477,7 +477,7 @@ class KNNBartAttention(nn.Module):
                 
             # KNN Code PART:
             # knn_memory_attn_weights = torch.bmm(query_states, KNN_memory_key.transpose(1, 2))
-            knn_memory_attn_weights = einsum('b h m n, b h v c j -> b h m v j', KNN_query_states, memory_key)
+            knn_memory_attn_weights = einsum('b h m n, b h v c j -> b h m v c', KNN_query_states, memory_key)
             # knn_memory_attn_weights = 
             mask_value = -torch.finfo(knn_memory_attn_weights.dtype).max
             memory_attention_mask = einsum('b h m j, b h v j -> b h m v j', memory_attention_mask, memory_attention_mask)
@@ -551,7 +551,7 @@ class KNNBartAttention(nn.Module):
         # torch.Size([96, 40, 40]) torch.Size([96, 40, 32])
         local_attn_output = torch.bmm(local_attn_probs, value_states)
         # torch.Size([96, 40, 64]) = torch.Size([96, 40, 40]) * torch.Size([96, 40, 64])
-        KNN_memory_value_states = rearrange(memory_value, ' b h n d k -> (b h) n d k')
+        KNN_memory_value_states = rearrange(memory_value, ' b h n d k -> (b h) n k d')
         # torch.Size([8, 12, 40, 32, 64]) --> 
         memory_attn_output = einsum('b m m j, b m n j -> b m n j', memory_attn_probs, KNN_memory_value_states)
         # memory_attn_output = torch.bmm(memory_attn_probs, KNN_memory_value_states)

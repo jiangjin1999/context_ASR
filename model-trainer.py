@@ -43,21 +43,20 @@ class Config(Tap):
     test_batch_size: int = 24
     
     current_dataset: str = 'HKUST' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
-    is_use_knn: bool = False
+    is_use_knn: bool = True
     is_from_ckpt: bool = False
-    is_shuffle_knn: bool = False
+    is_shuffle_knn: bool = True
     max_seq_length: int = 80 # 一个句子的max length 是 
     is_add_sos_eos: bool = False
     
     gate_parameter: float = 0.5
-    _num_retrieved_memories_K: int = 64
+    _num_retrieved_memories_K: int = 16
     
     
     is_random_vector: bool = False
     is_use_threshold: bool = False
     _knn_dis_threshold: float = 0
     
-    is_adaptive_knn: bool = False
  
     language: str = 'en'
     is_zh: bool = False

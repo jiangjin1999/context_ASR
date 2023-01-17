@@ -1,4 +1,4 @@
-2023-01-17 16:48:34.974 | INFO     | __main__:<module>:706 - {'Model_config': BartConfig {
+2023-01-17 16:49:18.864 | INFO     | __main__:<module>:706 - {'Model_config': BartConfig {
   "_name_or_path": "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/BART",
   "activation_dropout": 0.1,
   "activation_function": "gelu",
@@ -76,11 +76,11 @@
 }
 ,
  'SEGMENTS': 1,
- 'best_model_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=32/model-checkpoint/',
+ 'best_model_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=16/model-checkpoint/',
  'current_dataset': 'HKUST',
  'dev_batch_size': 22,
  'device': 'cuda',
- 'early_stop': <utils.EarlyStopping object at 0x7ff9e02cc280>,
+ 'early_stop': <utils.EarlyStopping object at 0x7fb8d28251f0>,
  'early_stop_flag': False,
  'epochs': 100,
  'gate_parameter': 0.5,
@@ -94,34 +94,34 @@
  'is_use_knn': True,
  'is_use_threshold': False,
  'is_zh': True,
- 'knn_memories_directory': '.tmp/knn.memories/HKUST-K=32',
+ 'knn_memories_directory': '.tmp/knn.memories/HKUST-K=16',
  'language': 'zh',
  'learning_rate': 5e-05,
- 'log_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=32/log/',
+ 'log_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=16/log/',
  'lr_scheduler_type': 'linear',
  'max_seq_length': 80,
  'max_train_steps': 468200,
  'metric': 'cer',
  'mode': 'train',
  'mode_mode_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn',
- 'mode_mode_path_dataset': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=32',
+ 'mode_mode_path_dataset': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=16',
  'model_type': 'T-model-knn',
  'num_warmup_steps': 4682,
  'pretrained_model': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/KNN_BART',
  'pwd': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/',
  'seed': 2022,
  'shuffle': False,
- 'tensorboard_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=32/tensorboard/',
+ 'tensorboard_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=16/tensorboard/',
  'test_batch_size': 24,
- 'test_result_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=32/result/',
+ 'test_result_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=16/result/',
  'text_data_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/data/zh',
  'train_batch_size': 35,
  'weight_decay': 0.02}
-2023-01-17 16:48:35.024 | INFO     | __main__:train:286 - start training ...
-2023-01-17 16:48:35.024 | INFO     | __main__:train:287 -   num example = 4682
-2023-01-17 16:48:35.024 | INFO     | __main__:train:288 -   num epochs = 100
-2023-01-17 16:48:35.024 | INFO     | __main__:train:289 -   total optimization step = 468200
-2023-01-17 16:48:35.024 | INFO     | __main__:train_epoch:323 - 
+2023-01-17 16:49:18.913 | INFO     | __main__:train:286 - start training ...
+2023-01-17 16:49:18.913 | INFO     | __main__:train:287 -   num example = 4682
+2023-01-17 16:49:18.913 | INFO     | __main__:train:288 -   num epochs = 100
+2023-01-17 16:49:18.913 | INFO     | __main__:train:289 -   total optimization step = 468200
+2023-01-17 16:49:18.913 | INFO     | __main__:train_epoch:323 - 
 
-2023-01-17 16:48:35.024 | INFO     | __main__:train_epoch:324 - =======================================
-2023-01-17 16:48:35.025 | INFO     | __main__:train_epoch:325 - training epoch<1> ...
+2023-01-17 16:49:18.914 | INFO     | __main__:train_epoch:324 - =======================================
+2023-01-17 16:49:18.914 | INFO     | __main__:train_epoch:325 - training epoch<1> ...

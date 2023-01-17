@@ -125,3 +125,19 @@
 
 2023-01-17 16:30:11.234 | INFO     | __main__:train_epoch:324 - =======================================
 2023-01-17 16:30:11.234 | INFO     | __main__:train_epoch:325 - training epoch<1> ...
+2023-01-17 17:04:22.373 | INFO     | __main__:on_epoch_end:363 - 
+
+2023-01-17 17:04:22.373 | INFO     | __main__:on_epoch_end:364 - dev/cer is 0.20590413289302512
+2023-01-17 17:04:23.247 | INFO     | __main__:on_evaluation_end:441 - 
+
+2023-01-17 17:04:23.247 | INFO     | __main__:on_evaluation_end:442 - dev/best_cer is 0.20590413289302512
+2023-01-17 17:04:23.248 | INFO     | __main__:predict:467 - 
+
+2023-01-17 17:04:23.248 | INFO     | __main__:predict:468 - start predicting ...
+2023-01-17 17:07:15.949 | INFO     | __main__:predict:567 - 
+
+2023-01-17 17:07:15.950 | INFO     | __main__:predict:568 - test/cer is 0.21164507079882447
+2023-01-17 17:07:15.951 | INFO     | __main__:train_epoch:323 - 
+
+2023-01-17 17:07:15.951 | INFO     | __main__:train_epoch:324 - =======================================
+2023-01-17 17:07:15.952 | INFO     | __main__:train_epoch:325 - training epoch<2> ...

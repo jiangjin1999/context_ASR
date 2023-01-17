@@ -28,7 +28,6 @@ pretrained-model/checkpoint/AISHELL-1/*bin
 pretrained-model/checkpoint/HKUST/*.bin
 pretrained-model/checkpoint/LIBRISPEECH_CLEAN/*.bin
 
-data/en
 Other-test/
 
 

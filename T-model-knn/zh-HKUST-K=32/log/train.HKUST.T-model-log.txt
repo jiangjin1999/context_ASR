@@ -1,4 +1,4 @@
-2023-01-17 16:48:34.974 | INFO     | __main__:<module>:706 - {'Model_config': BartConfig {
+2023-01-17 17:11:21.562 | INFO     | __main__:<module>:705 - {'Model_config': BartConfig {
   "_name_or_path": "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/BART",
   "activation_dropout": 0.1,
   "activation_function": "gelu",
@@ -80,12 +80,11 @@
  'current_dataset': 'HKUST',
  'dev_batch_size': 22,
  'device': 'cuda',
- 'early_stop': <utils.EarlyStopping object at 0x7ff9e02cc280>,
+ 'early_stop': <utils.EarlyStopping object at 0x7f4ed09c11c0>,
  'early_stop_flag': False,
  'epochs': 100,
  'gate_parameter': 0.5,
  'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
- 'is_adaptive_knn': False,
  'is_add_sos_eos': True,
  'is_from_ckpt': False,
  'is_pretrained': True,
@@ -117,11 +116,27 @@
  'text_data_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/data/zh',
  'train_batch_size': 35,
  'weight_decay': 0.02}
-2023-01-17 16:48:35.024 | INFO     | __main__:train:286 - start training ...
-2023-01-17 16:48:35.024 | INFO     | __main__:train:287 -   num example = 4682
-2023-01-17 16:48:35.024 | INFO     | __main__:train:288 -   num epochs = 100
-2023-01-17 16:48:35.024 | INFO     | __main__:train:289 -   total optimization step = 468200
-2023-01-17 16:48:35.024 | INFO     | __main__:train_epoch:323 - 
+2023-01-17 17:11:21.611 | INFO     | __main__:train:285 - start training ...
+2023-01-17 17:11:21.611 | INFO     | __main__:train:286 -   num example = 4682
+2023-01-17 17:11:21.611 | INFO     | __main__:train:287 -   num epochs = 100
+2023-01-17 17:11:21.611 | INFO     | __main__:train:288 -   total optimization step = 468200
+2023-01-17 17:11:21.612 | INFO     | __main__:train_epoch:322 - 
 
-2023-01-17 16:48:35.024 | INFO     | __main__:train_epoch:324 - =======================================
-2023-01-17 16:48:35.025 | INFO     | __main__:train_epoch:325 - training epoch<1> ...
+2023-01-17 17:11:21.612 | INFO     | __main__:train_epoch:323 - =======================================
+2023-01-17 17:11:21.612 | INFO     | __main__:train_epoch:324 - training epoch<1> ...
+2023-01-17 19:21:42.161 | INFO     | __main__:on_epoch_end:362 - 
+
+2023-01-17 19:21:42.161 | INFO     | __main__:on_epoch_end:363 - dev/cer is 0.22159977591933097
+2023-01-17 19:21:42.945 | INFO     | __main__:on_evaluation_end:440 - 
+
+2023-01-17 19:21:42.946 | INFO     | __main__:on_evaluation_end:441 - dev/best_cer is 0.22159977591933097
+2023-01-17 19:21:42.946 | INFO     | __main__:predict:466 - 
+
+2023-01-17 19:21:42.946 | INFO     | __main__:predict:467 - start predicting ...
+2023-01-17 19:51:42.656 | INFO     | __main__:predict:566 - 
+
+2023-01-17 19:51:42.657 | INFO     | __main__:predict:567 - test/cer is 0.22973942944897924
+2023-01-17 19:51:42.662 | INFO     | __main__:train_epoch:322 - 
+
+2023-01-17 19:51:42.662 | INFO     | __main__:train_epoch:323 - =======================================
+2023-01-17 19:51:42.663 | INFO     | __main__:train_epoch:324 - training epoch<2> ...

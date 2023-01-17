@@ -43,10 +43,10 @@ class Config(Tap):
     test_batch_size: int = 24
     
     current_dataset: str = 'HKUST' #'LIBRISPEECH_OTHER' #'LIBRISPEECH_CLEAN'
-    is_use_knn: bool = True
+    is_use_knn: bool = False
     is_from_ckpt: bool = False
-    is_shuffle_knn: bool = True
-    max_seq_length: int = 80 # 一个句子的max length 是 
+    is_shuffle_knn: bool = False
+    max_seq_length: int = 80 # 一个句子的max length 是
     is_add_sos_eos: bool = False
     
     gate_parameter: float = 0.5

@@ -95,7 +95,7 @@ class Config(Tap):
     max_train_steps: int = 2000
     epochs: int = 100
 
-    early_stop = EarlyStopping(patience=7)
+    early_stop = EarlyStopping(patience=5)
     early_stop_flag: str = False
     device: str = 'cuda'
     
@@ -673,7 +673,7 @@ if __name__ == "__main__":
     
     reset_config_parse(config)
         
-    set_my_seed(config.seed)
+    # set_my_seed(config.seed)
     if os.path.exists(config.mode_mode_path_dataset):
         pass
     else:

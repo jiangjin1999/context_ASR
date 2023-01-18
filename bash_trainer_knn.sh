@@ -14,7 +14,7 @@ python model-trainer.py \
         --train_batch_size 35 \
         --dev_batch_size 22 \
         --test_batch_size 24 \
-        --_num_retrieved_memories_K 16\
+        --_num_retrieved_memories_K 1\
         --is_use_knn \
         --is_add_sos_eos \
         --max_seq_length 80

@@ -1,0 +1,268 @@
+2023-01-18 11:28:16.375 | INFO     | __main__:<module>:705 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartForConditionalGeneration"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 101,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 102,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 102,
+  "forced_eos_token_id": 102,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 0,
+  "scale_embedding": false,
+  "task_specific_params": {
+    "summarization": {
+      "length_penalty": 1.0,
+      "max_length": 128,
+      "min_length": 12,
+      "num_beams": 4
+    },
+    "summarization_cnn": {
+      "length_penalty": 2.0,
+      "max_length": 142,
+      "min_length": 56,
+      "num_beams": 4
+    },
+    "summarization_xsum": {
+      "length_penalty": 1.0,
+      "max_length": 62,
+      "min_length": 11,
+      "num_beams": 6
+    }
+  },
+  "tokenizer_class": "BertTokenizer",
+  "transformers_version": "4.24.0.dev0",
+  "use_cache": true,
+  "vocab_size": 51271
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/model-checkpoint/',
+ 'current_dataset': 'HKUST',
+ 'dev_batch_size': 22,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7fcd569f20d0>,
+ 'early_stop_flag': False,
+ 'epochs': 100,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': True,
+ 'is_from_ckpt': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_use_knn': True,
+ 'is_use_threshold': False,
+ 'is_zh': True,
+ 'knn_memories_directory': '.tmp/knn.memories/HKUST-K=64',
+ 'language': 'zh',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_seq_length': 80,
+ 'max_train_steps': 468200,
+ 'metric': 'cer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn',
+ 'mode_mode_path_dataset': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64',
+ 'model_type': 'T-model-knn',
+ 'num_warmup_steps': 4682,
+ 'pretrained_model': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/KNN_BART',
+ 'pwd': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/',
+ 'seed': 2022,
+ 'shuffle': False,
+ 'tensorboard_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/tensorboard/',
+ 'test_batch_size': 24,
+ 'test_result_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/result/',
+ 'text_data_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/data/zh',
+ 'train_batch_size': 35,
+ 'weight_decay': 0.02}
+2023-01-18 11:28:16.461 | INFO     | __main__:train:285 - start training ...
+2023-01-18 11:28:16.461 | INFO     | __main__:train:286 -   num example = 4682
+2023-01-18 11:28:16.461 | INFO     | __main__:train:287 -   num epochs = 100
+2023-01-18 11:28:16.461 | INFO     | __main__:train:288 -   total optimization step = 468200
+2023-01-18 11:28:16.462 | INFO     | __main__:train_epoch:322 - 
+
+2023-01-18 11:28:16.462 | INFO     | __main__:train_epoch:323 - =======================================
+2023-01-18 11:28:16.462 | INFO     | __main__:train_epoch:324 - training epoch<1> ...
+2023-01-18 20:41:39.564 | INFO     | __main__:<module>:705 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartForConditionalGeneration"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 101,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 102,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 102,
+  "forced_eos_token_id": 102,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 0,
+  "scale_embedding": false,
+  "task_specific_params": {
+    "summarization": {
+      "length_penalty": 1.0,
+      "max_length": 128,
+      "min_length": 12,
+      "num_beams": 4
+    },
+    "summarization_cnn": {
+      "length_penalty": 2.0,
+      "max_length": 142,
+      "min_length": 56,
+      "num_beams": 4
+    },
+    "summarization_xsum": {
+      "length_penalty": 1.0,
+      "max_length": 62,
+      "min_length": 11,
+      "num_beams": 6
+    }
+  },
+  "tokenizer_class": "BertTokenizer",
+  "transformers_version": "4.24.0.dev0",
+  "use_cache": true,
+  "vocab_size": 51271
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/model-checkpoint/',
+ 'current_dataset': 'HKUST',
+ 'dev_batch_size': 22,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7f91106971c0>,
+ 'early_stop_flag': False,
+ 'epochs': 100,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': True,
+ 'is_from_ckpt': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_use_knn': True,
+ 'is_use_threshold': False,
+ 'is_zh': True,
+ 'knn_memories_directory': '.tmp/knn.memories/HKUST-K=64',
+ 'language': 'zh',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_seq_length': 80,
+ 'max_train_steps': 542500,
+ 'metric': 'cer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn',
+ 'mode_mode_path_dataset': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64',
+ 'model_type': 'T-model-knn',
+ 'num_warmup_steps': 5425,
+ 'pretrained_model': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/KNN_BART',
+ 'pwd': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/',
+ 'seed': 2022,
+ 'shuffle': False,
+ 'tensorboard_path': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/tensorboard/',
+ 'test_batch_size': 24,
+ 'test_result_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/T-model-knn/zh-HKUST-K=64/result/',
+ 'text_data_dir': '/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/data/zh',
+ 'train_batch_size': 30,
+ 'weight_decay': 0.02}
+2023-01-18 20:41:39.640 | INFO     | __main__:train:285 - start training ...
+2023-01-18 20:41:39.641 | INFO     | __main__:train:286 -   num example = 5425
+2023-01-18 20:41:39.641 | INFO     | __main__:train:287 -   num epochs = 100
+2023-01-18 20:41:39.641 | INFO     | __main__:train:288 -   total optimization step = 542500
+2023-01-18 20:41:39.641 | INFO     | __main__:train_epoch:322 - 
+
+2023-01-18 20:41:39.641 | INFO     | __main__:train_epoch:323 - =======================================
+2023-01-18 20:41:39.641 | INFO     | __main__:train_epoch:324 - training epoch<1> ...
+2023-01-18 23:20:42.557 | INFO     | __main__:on_epoch_end:362 - 
+
+2023-01-18 23:20:42.558 | INFO     | __main__:on_epoch_end:363 - dev/cer is 0.23808571085590813
+2023-01-18 23:20:43.418 | INFO     | __main__:on_evaluation_end:440 - 
+
+2023-01-18 23:20:43.419 | INFO     | __main__:on_evaluation_end:441 - dev/best_cer is 0.23808571085590813
+2023-01-18 23:20:43.419 | INFO     | __main__:predict:466 - 
+
+2023-01-18 23:20:43.419 | INFO     | __main__:predict:467 - start predicting ...
+2023-01-18 23:48:10.953 | INFO     | __main__:predict:566 - 
+
+2023-01-18 23:48:10.954 | INFO     | __main__:predict:567 - test/cer is 0.2527250571719499
+2023-01-18 23:48:10.959 | INFO     | __main__:train_epoch:322 - 
+
+2023-01-18 23:48:10.959 | INFO     | __main__:train_epoch:323 - =======================================
+2023-01-18 23:48:10.960 | INFO     | __main__:train_epoch:324 - training epoch<2> ...

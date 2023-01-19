@@ -49,6 +49,8 @@ class Config(Tap):
     max_seq_length: int = 80 # 一个句子的max length 是
     is_add_sos_eos: bool = False
     
+    is_sliding_4: bool = False
+    
     gate_parameter: float = 0.5
     _num_retrieved_memories_K: int = 16
     
@@ -625,7 +627,11 @@ def reset_config_parse(config):
             config.knn_memories_directory = config.knn_memories_directory + '.shuffle'
         config.knn_memories_directory = config.knn_memories_directory + '/'
     else:
-        config.model_type = config.model_type + 'T-model-baseline'
+        if config.is_sliding_4:
+            config.model_type = config.model_type + 'T-model-baseline-sliding-4'
+            config.text_data_dir: str = config.pwd +'data/'+ 'sliding-4/' 
+        else:
+            config.model_type = config.model_type + 'T-model-baseline'
         config.knn_memories_directory = '.tmp/baseline.memories.tmp/' 
         
     if config.is_random_vector:
@@ -657,6 +663,8 @@ def reset_config_parse(config):
     config.tensorboard_path: str = config.mode_mode_path_dataset + '/tensorboard/' 
 
     config.text_data_dir: str = config.pwd +'data/'+ config.language 
+    if config.is_sliding_4:
+        config.text_data_dir: str = config.pwd +'data/'+ 'sliding-4/' 
     
     config.pretrained_model: str = config.pwd + 'pretrained-model/'+ config.language+'/BART'
     if config.is_use_knn:

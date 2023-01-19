@@ -8,13 +8,13 @@
 #         --is_use_knn \
 #         --is_add_sos_eos \
 #         --max_seq_length 40
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=1
 python model-trainer.py \
         --current_dataset HKUST \
         --train_batch_size 30 \
         --dev_batch_size 22 \
         --test_batch_size 24 \
-        --_num_retrieved_memories_K 32 \
+        --_num_retrieved_memories_K 64 \
         --is_use_knn \
         --is_add_sos_eos \
         --max_seq_length 80

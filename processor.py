@@ -60,6 +60,7 @@ class TextDataProcessor(DataProcessor):
         self.SEGMENTS = config.SEGMENTS
         self.is_shuffle_knn = config.is_shuffle_knn
         self.is_add_sos_eos = config.is_add_sos_eos
+        self.is_sliding_4 = config.is_sliding_4
     
     def _read(self, file: str) -> List[TextInputExample]:
         with open(file, 'r', encoding='utf-8') as f:
@@ -78,6 +79,8 @@ class TextDataProcessor(DataProcessor):
                 # data_doc.append(data_doc_tmp)# 得到每个doc的list
                 # assert len(data_doc) in [340,20,40]
                 examples = self.knn_doc_process(data_doc)
+            elif self.is_sliding_4:
+                examples = [TextInputExample(item.strip().split('\t')[0], item.strip().split('\t')[1], item.strip().split('\t')[2]) for item in data]
             else:
                 if 'LIBRISPEECH' in file:
                     # print('data processor for librispeech')

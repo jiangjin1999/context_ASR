@@ -518,7 +518,7 @@ class KNNBartAttention(nn.Module):
             # torch.Size([96, 40, 40])
             
         # KNN Code:
-        attn_weights = torch.cat((attn_weights, knn_memory_attn_weights), dim=-1)
+        attn_weights = torch.cat((knn_memory_attn_weights, attn_weights), dim=-1)
         
         attn_weights = nn.functional.softmax(attn_weights, dim=-1)
         # torch.Size([96, 40, 72])

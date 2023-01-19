@@ -1,6 +1,6 @@
 import torch
 
-path = "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/zh/KNN_BART/pytorch_model.bin"
+path = "/home/users/jiangjin/jiangjin_bupt/ASR_CORRECTION/Context_Correction/context_seq2seq/pretrained-model/checkpoint/HKUST/pytorch_model.bin"
 paras = torch.load(path)
 
 

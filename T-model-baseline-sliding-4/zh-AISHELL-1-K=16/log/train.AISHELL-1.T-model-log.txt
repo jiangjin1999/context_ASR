@@ -125,3 +125,205 @@
 
 2023-01-20 04:11:22.812 | INFO     | __main__:train_epoch:325 - =======================================
 2023-01-20 04:11:22.812 | INFO     | __main__:train_epoch:326 - training epoch<1> ...
+2023-01-20 04:17:47.049 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 04:17:47.049 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.07033812304207786
+2023-01-20 04:17:47.920 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 04:17:47.920 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.07033812304207786
+2023-01-20 04:17:47.921 | INFO     | __main__:predict:468 - 
+
+2023-01-20 04:17:47.921 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 04:19:23.302 | INFO     | __main__:predict:568 - 
+
+2023-01-20 04:19:23.302 | INFO     | __main__:predict:569 - test/cer is 0.07587805522138436
+2023-01-20 04:19:23.304 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 04:19:23.304 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 04:19:23.305 | INFO     | __main__:train_epoch:326 - training epoch<2> ...
+2023-01-20 04:25:44.981 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 04:25:44.981 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06834527083670378
+2023-01-20 04:25:50.013 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 04:25:50.014 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.06834527083670378
+2023-01-20 04:25:50.014 | INFO     | __main__:predict:468 - 
+
+2023-01-20 04:25:50.015 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 04:27:24.836 | INFO     | __main__:predict:568 - 
+
+2023-01-20 04:27:24.837 | INFO     | __main__:predict:569 - test/cer is 0.07326662950030809
+2023-01-20 04:27:24.838 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 04:27:24.839 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 04:27:24.839 | INFO     | __main__:train_epoch:326 - training epoch<3> ...
+2023-01-20 04:33:48.190 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 04:33:48.190 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06685982380539174
+2023-01-20 04:33:53.400 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 04:33:53.401 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.06685982380539174
+2023-01-20 04:33:53.402 | INFO     | __main__:predict:468 - 
+
+2023-01-20 04:33:53.402 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 04:35:26.794 | INFO     | __main__:predict:568 - 
+
+2023-01-20 04:35:26.795 | INFO     | __main__:predict:569 - test/cer is 0.07147677591619964
+2023-01-20 04:35:26.796 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 04:35:26.796 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 04:35:26.796 | INFO     | __main__:train_epoch:326 - training epoch<4> ...
+2023-01-20 04:41:47.148 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 04:41:47.148 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06632300383863045
+2023-01-20 04:41:52.081 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 04:41:52.082 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.06632300383863045
+2023-01-20 04:41:52.082 | INFO     | __main__:predict:468 - 
+
+2023-01-20 04:41:52.083 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 04:43:25.719 | INFO     | __main__:predict:568 - 
+
+2023-01-20 04:43:25.719 | INFO     | __main__:predict:569 - test/cer is 0.07080191308940466
+2023-01-20 04:43:25.721 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 04:43:25.721 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 04:43:25.721 | INFO     | __main__:train_epoch:326 - training epoch<5> ...
+2023-01-20 04:49:47.840 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 04:49:47.840 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06659509067109849
+2023-01-20 04:49:47.841 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 04:49:47.841 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 04:49:47.841 | INFO     | __main__:train_epoch:326 - training epoch<6> ...
+2023-01-20 04:56:10.397 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 04:56:10.398 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06613916138426014
+2023-01-20 04:56:15.275 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 04:56:15.437 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.06613916138426014
+2023-01-20 04:56:15.438 | INFO     | __main__:predict:468 - 
+
+2023-01-20 04:56:15.438 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 04:57:49.926 | INFO     | __main__:predict:568 - 
+
+2023-01-20 04:57:49.926 | INFO     | __main__:predict:569 - test/cer is 0.07103664798568117
+2023-01-20 04:57:49.928 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 04:57:49.928 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 04:57:49.928 | INFO     | __main__:train_epoch:326 - training epoch<7> ...
+2023-01-20 05:04:11.202 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:04:11.203 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06583765975909285
+2023-01-20 05:04:16.316 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 05:04:16.317 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.06583765975909285
+2023-01-20 05:04:16.317 | INFO     | __main__:predict:468 - 
+
+2023-01-20 05:04:16.317 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 05:05:49.574 | INFO     | __main__:predict:568 - 
+
+2023-01-20 05:05:49.575 | INFO     | __main__:predict:569 - test/cer is 0.07020040491769608
+2023-01-20 05:05:49.576 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:05:49.576 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:05:49.576 | INFO     | __main__:train_epoch:326 - training epoch<8> ...
+2023-01-20 05:12:12.083 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:12:12.084 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.0662935890459312
+2023-01-20 05:12:12.084 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:12:12.084 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:12:12.085 | INFO     | __main__:train_epoch:326 - training epoch<9> ...
+2023-01-20 05:18:35.337 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:18:35.337 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06560969511567367
+2023-01-20 05:18:40.206 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 05:18:40.364 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.06560969511567367
+2023-01-20 05:18:40.365 | INFO     | __main__:predict:468 - 
+
+2023-01-20 05:18:40.365 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 05:20:15.516 | INFO     | __main__:predict:568 - 
+
+2023-01-20 05:20:15.516 | INFO     | __main__:predict:569 - test/cer is 0.06943751650479739
+2023-01-20 05:20:15.518 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:20:15.518 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:20:15.518 | INFO     | __main__:train_epoch:326 - training epoch<10> ...
+2023-01-20 05:26:38.768 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:26:38.768 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06595531892988984
+2023-01-20 05:26:38.769 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:26:38.769 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:26:38.769 | INFO     | __main__:train_epoch:326 - training epoch<11> ...
+2023-01-20 05:33:01.107 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:33:01.107 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06599944111893871
+2023-01-20 05:33:01.108 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:33:01.108 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:33:01.108 | INFO     | __main__:train_epoch:326 - training epoch<12> ...
+2023-01-20 05:39:23.282 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:39:23.282 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06561704881384849
+2023-01-20 05:39:23.283 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:39:23.283 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:39:23.283 | INFO     | __main__:train_epoch:326 - training epoch<13> ...
+2023-01-20 05:45:47.874 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:45:47.875 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06567587839924698
+2023-01-20 05:45:47.875 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:45:47.875 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:45:47.876 | INFO     | __main__:train_epoch:326 - training epoch<14> ...
+2023-01-20 05:52:04.209 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:52:04.209 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06534496198138044
+2023-01-20 05:52:08.481 | INFO     | __main__:on_evaluation_end:442 - 
+
+2023-01-20 05:52:08.482 | INFO     | __main__:on_evaluation_end:443 - dev/best_cer is 0.06534496198138044
+2023-01-20 05:52:08.482 | INFO     | __main__:predict:468 - 
+
+2023-01-20 05:52:08.483 | INFO     | __main__:predict:469 - start predicting ...
+2023-01-20 05:53:39.919 | INFO     | __main__:predict:568 - 
+
+2023-01-20 05:53:39.919 | INFO     | __main__:predict:569 - test/cer is 0.069936328159385
+2023-01-20 05:53:39.920 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:53:39.921 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:53:39.921 | INFO     | __main__:train_epoch:326 - training epoch<15> ...
+2023-01-20 05:59:54.087 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 05:59:54.088 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06583030606091804
+2023-01-20 05:59:54.088 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 05:59:54.088 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 05:59:54.089 | INFO     | __main__:train_epoch:326 - training epoch<16> ...
+2023-01-20 06:06:08.419 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 06:06:08.420 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06596267262806466
+2023-01-20 06:06:08.420 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 06:06:08.420 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 06:06:08.420 | INFO     | __main__:train_epoch:326 - training epoch<17> ...
+2023-01-20 06:12:22.665 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 06:12:22.665 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06597738002441428
+2023-01-20 06:12:22.665 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 06:12:22.666 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 06:12:22.666 | INFO     | __main__:train_epoch:326 - training epoch<18> ...
+2023-01-20 06:18:36.781 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 06:18:36.781 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06541849896312855
+2023-01-20 06:18:36.781 | INFO     | __main__:train_epoch:324 - 
+
+2023-01-20 06:18:36.782 | INFO     | __main__:train_epoch:325 - =======================================
+2023-01-20 06:18:36.782 | INFO     | __main__:train_epoch:326 - training epoch<19> ...
+2023-01-20 06:24:51.067 | INFO     | __main__:on_epoch_end:364 - 
+
+2023-01-20 06:24:51.068 | INFO     | __main__:on_epoch_end:365 - dev/cer is 0.06541849896312855
+2023-01-20 06:24:51.068 | INFO     | __main__:train:299 - early stopping on train epoch

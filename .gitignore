@@ -5,6 +5,7 @@ T-model-knn/*/model-checkpoint/*.pt
 T-model-knn-ckpt/*/model-checkpoint/*.pt
 T-model-knn-ckpt-shuffle/*/model-checkpoint/*.pt
 T-model-knn-shuffle/*/model-checkpoint/*.pt
+T-model-baseline-sliding-4/*/model-checkpoint/*.pt
 
 T-model-baseline/*/tensorboard
 T-model-knn/*/tensorboard

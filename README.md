@@ -7,3 +7,6 @@
 ### 实现：
 检查.sh中的内容
 修改knn_memories_directory
+
+
+datastore的存储

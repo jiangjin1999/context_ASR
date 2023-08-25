@@ -1,0 +1,708 @@
+2023-06-15 13:34:39.919 | INFO     | __main__:<module>:957 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/jiangjin/context/pretrained-model/en/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 0,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 2,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 2,
+  "forced_bos_token_id": 0,
+  "forced_eos_token_id": 2,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "scale_embedding": false,
+  "torch_dtype": "float32",
+  "transformers_version": "4.29.2",
+  "use_cache": true,
+  "vocab_size": 50265
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/model-checkpoint/',
+ 'current_dataset': 'LIBRISPEECH_CLEAN',
+ 'datastore_path': '/home/jiangjin/context/datastore/en/LIBRISPEECH_CLEAN/',
+ 'dev_batch_size': 64,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7f1478fe5850>,
+ 'early_stop_flag': False,
+ 'epochs': 30,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': False,
+ 'is_domain_datastore': False,
+ 'is_from_ckpt': False,
+ 'is_knn_gpu': False,
+ 'is_offline': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_sliding_k': 0,
+ 'is_use_knn': False,
+ 'is_zh': False,
+ 'knn_memories_directory': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/datestore_memories/',
+ 'knn_memorizing_layers': 5,
+ 'language': 'en',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_memories': 65000,
+ 'max_seq_length': 100,
+ 'max_train_steps': 10360,
+ 'metric': 'wer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/jiangjin/context/T-model-baseline',
+ 'mode_mode_path_dataset': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline',
+ 'model_type': 'T-model-baseline',
+ 'num_beams': 4,
+ 'num_warmup_steps': 1036,
+ 'pretrained_model': '/home/jiangjin/context/pretrained-model/en/BART',
+ 'pwd': '/home/jiangjin/context/',
+ 'seed': 2023,
+ 'shuffle': True,
+ 'tensorboard_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/tensorboard/',
+ 'test_batch_size': 64,
+ 'test_result_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/result/',
+ 'text_data_dir': '/home/jiangjin/context/data/en',
+ 'train_batch_size': 128,
+ 'weight_decay': 0.02}
+2023-06-15 13:34:39.962 | INFO     | __main__:train:307 - start training ...
+2023-06-15 13:34:39.963 | INFO     | __main__:train:308 -   num example = 1036
+2023-06-15 13:34:39.963 | INFO     | __main__:train:309 -   num epochs = 30
+2023-06-15 13:34:39.963 | INFO     | __main__:train:310 -   total optimization step = 10360
+2023-06-15 13:34:39.963 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-15 13:34:39.963 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-15 13:34:39.963 | INFO     | __main__:train_epoch:402 - training epoch<1> ...
+2023-06-15 13:34:39.965 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-15 14:03:33.583 | INFO     | __main__:train:321 - 
+
+2023-06-15 14:03:33.584 | INFO     | __main__:train:323 - train epoch 1 time is 28.89min
+2023-06-15 14:03:33.584 | INFO     | __main__:evaluate:480 - 
+
+2023-06-15 14:03:33.584 | INFO     | __main__:evaluate:482 - evaluating epoch<1> ...
+2023-06-15 14:03:33.586 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 14:18:57.559 | INFO     | __main__:<module>:957 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/jiangjin/context/pretrained-model/en/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 0,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 2,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 2,
+  "forced_bos_token_id": 0,
+  "forced_eos_token_id": 2,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "scale_embedding": false,
+  "torch_dtype": "float32",
+  "transformers_version": "4.29.2",
+  "use_cache": true,
+  "vocab_size": 50265
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/model-checkpoint/',
+ 'current_dataset': 'LIBRISPEECH_CLEAN',
+ 'datastore_path': '/home/jiangjin/context/datastore/en/LIBRISPEECH_CLEAN/',
+ 'dev_batch_size': 64,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7fce83b91790>,
+ 'early_stop_flag': False,
+ 'epochs': 30,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': False,
+ 'is_domain_datastore': False,
+ 'is_from_ckpt': False,
+ 'is_knn_gpu': False,
+ 'is_offline': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_sliding_k': 0,
+ 'is_use_knn': False,
+ 'is_zh': False,
+ 'knn_memories_directory': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/datestore_memories/',
+ 'knn_memorizing_layers': 5,
+ 'language': 'en',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_memories': 65000,
+ 'max_seq_length': 100,
+ 'max_train_steps': 10360,
+ 'metric': 'wer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/jiangjin/context/T-model-baseline',
+ 'mode_mode_path_dataset': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline',
+ 'model_type': 'T-model-baseline',
+ 'num_beams': 4,
+ 'num_warmup_steps': 1036,
+ 'pretrained_model': '/home/jiangjin/context/pretrained-model/en/BART',
+ 'pwd': '/home/jiangjin/context/',
+ 'seed': 2023,
+ 'shuffle': True,
+ 'tensorboard_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/tensorboard/',
+ 'test_batch_size': 64,
+ 'test_result_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/result/',
+ 'text_data_dir': '/home/jiangjin/context/data/en',
+ 'train_batch_size': 128,
+ 'weight_decay': 0.02}
+2023-06-16 14:18:57.603 | INFO     | __main__:train:307 - start training ...
+2023-06-16 14:18:57.603 | INFO     | __main__:train:308 -   num example = 1036
+2023-06-16 14:18:57.604 | INFO     | __main__:train:309 -   num epochs = 30
+2023-06-16 14:18:57.604 | INFO     | __main__:train:310 -   total optimization step = 10360
+2023-06-16 14:18:57.604 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 14:18:57.604 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 14:18:57.604 | INFO     | __main__:train_epoch:402 - training epoch<1> ...
+2023-06-16 14:18:57.606 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 14:19:30.167 | INFO     | __main__:<module>:957 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/jiangjin/context/pretrained-model/en/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 0,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 2,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 2,
+  "forced_bos_token_id": 0,
+  "forced_eos_token_id": 2,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "scale_embedding": false,
+  "torch_dtype": "float32",
+  "transformers_version": "4.29.2",
+  "use_cache": true,
+  "vocab_size": 50265
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/model-checkpoint/',
+ 'current_dataset': 'LIBRISPEECH_CLEAN',
+ 'datastore_path': '/home/jiangjin/context/datastore/en/LIBRISPEECH_CLEAN/',
+ 'dev_batch_size': 64,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7f5f1f865820>,
+ 'early_stop_flag': False,
+ 'epochs': 30,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': False,
+ 'is_domain_datastore': False,
+ 'is_from_ckpt': False,
+ 'is_knn_gpu': False,
+ 'is_offline': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_sliding_k': 0,
+ 'is_use_knn': False,
+ 'is_zh': False,
+ 'knn_memories_directory': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/datestore_memories/',
+ 'knn_memorizing_layers': 5,
+ 'language': 'en',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_memories': 65000,
+ 'max_seq_length': 100,
+ 'max_train_steps': 20720,
+ 'metric': 'wer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/jiangjin/context/T-model-baseline',
+ 'mode_mode_path_dataset': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline',
+ 'model_type': 'T-model-baseline',
+ 'num_beams': 4,
+ 'num_warmup_steps': 2072,
+ 'pretrained_model': '/home/jiangjin/context/pretrained-model/en/BART',
+ 'pwd': '/home/jiangjin/context/',
+ 'seed': 2023,
+ 'shuffle': True,
+ 'tensorboard_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/tensorboard/',
+ 'test_batch_size': 64,
+ 'test_result_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/result/',
+ 'text_data_dir': '/home/jiangjin/context/data/en',
+ 'train_batch_size': 64,
+ 'weight_decay': 0.02}
+2023-06-16 14:19:30.214 | INFO     | __main__:train:307 - start training ...
+2023-06-16 14:19:30.214 | INFO     | __main__:train:308 -   num example = 2072
+2023-06-16 14:19:30.214 | INFO     | __main__:train:309 -   num epochs = 30
+2023-06-16 14:19:30.214 | INFO     | __main__:train:310 -   total optimization step = 20720
+2023-06-16 14:19:30.214 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 14:19:30.214 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 14:19:30.214 | INFO     | __main__:train_epoch:402 - training epoch<1> ...
+2023-06-16 14:19:30.216 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 14:19:56.416 | INFO     | __main__:<module>:957 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/jiangjin/context/pretrained-model/en/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 0,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 2,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 2,
+  "forced_bos_token_id": 0,
+  "forced_eos_token_id": 2,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "scale_embedding": false,
+  "torch_dtype": "float32",
+  "transformers_version": "4.29.2",
+  "use_cache": true,
+  "vocab_size": 50265
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/model-checkpoint/',
+ 'current_dataset': 'LIBRISPEECH_CLEAN',
+ 'datastore_path': '/home/jiangjin/context/datastore/en/LIBRISPEECH_CLEAN/',
+ 'dev_batch_size': 64,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7f5bc123f7c0>,
+ 'early_stop_flag': False,
+ 'epochs': 30,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': False,
+ 'is_domain_datastore': False,
+ 'is_from_ckpt': False,
+ 'is_knn_gpu': False,
+ 'is_offline': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_sliding_k': 0,
+ 'is_use_knn': False,
+ 'is_zh': False,
+ 'knn_memories_directory': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/datestore_memories/',
+ 'knn_memorizing_layers': 5,
+ 'language': 'en',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_memories': 65000,
+ 'max_seq_length': 100,
+ 'max_train_steps': 20720,
+ 'metric': 'wer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/jiangjin/context/T-model-baseline',
+ 'mode_mode_path_dataset': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline',
+ 'model_type': 'T-model-baseline',
+ 'num_beams': 4,
+ 'num_warmup_steps': 2072,
+ 'pretrained_model': '/home/jiangjin/context/pretrained-model/en/BART',
+ 'pwd': '/home/jiangjin/context/',
+ 'seed': 2023,
+ 'shuffle': True,
+ 'tensorboard_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/tensorboard/',
+ 'test_batch_size': 64,
+ 'test_result_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/result/',
+ 'text_data_dir': '/home/jiangjin/context/data/en',
+ 'train_batch_size': 64,
+ 'weight_decay': 0.02}
+2023-06-16 14:19:56.459 | INFO     | __main__:train:307 - start training ...
+2023-06-16 14:19:56.460 | INFO     | __main__:train:308 -   num example = 2072
+2023-06-16 14:19:56.460 | INFO     | __main__:train:309 -   num epochs = 30
+2023-06-16 14:19:56.460 | INFO     | __main__:train:310 -   total optimization step = 20720
+2023-06-16 14:19:56.460 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 14:19:56.460 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 14:19:56.460 | INFO     | __main__:train_epoch:402 - training epoch<1> ...
+2023-06-16 14:19:56.462 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 14:41:31.732 | INFO     | __main__:train:321 - 
+
+2023-06-16 14:41:31.732 | INFO     | __main__:train:323 - train epoch 1 time is 21.59min
+2023-06-16 14:41:31.732 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 14:41:31.732 | INFO     | __main__:evaluate:482 - evaluating epoch<1> ...
+2023-06-16 14:41:31.734 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 06:22:01.834 | INFO     | __main__:<module>:957 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/jiangjin/context/pretrained-model/en/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartModel"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 0,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 2,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 2,
+  "forced_bos_token_id": 0,
+  "forced_eos_token_id": 2,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 1,
+  "scale_embedding": false,
+  "torch_dtype": "float32",
+  "transformers_version": "4.29.2",
+  "use_cache": true,
+  "vocab_size": 50265
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/model-checkpoint/',
+ 'current_dataset': 'LIBRISPEECH_CLEAN',
+ 'datastore_path': '/home/jiangjin/context/datastore/en/LIBRISPEECH_CLEAN/',
+ 'dev_batch_size': 32,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7f64140b6760>,
+ 'early_stop_flag': False,
+ 'epochs': 30,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': False,
+ 'is_domain_datastore': False,
+ 'is_from_ckpt': False,
+ 'is_knn_gpu': False,
+ 'is_offline': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_sliding_k': 0,
+ 'is_use_knn': False,
+ 'is_zh': False,
+ 'knn_memories_directory': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/datestore_memories/',
+ 'knn_memorizing_layers': 5,
+ 'language': 'en',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_memories': 65000,
+ 'max_seq_length': 100,
+ 'max_train_steps': 41430,
+ 'metric': 'wer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/jiangjin/context/T-model-baseline',
+ 'mode_mode_path_dataset': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline',
+ 'model_type': 'T-model-baseline',
+ 'num_beams': 4,
+ 'num_warmup_steps': 4143,
+ 'pretrained_model': '/home/jiangjin/context/pretrained-model/en/BART',
+ 'pwd': '/home/jiangjin/context/',
+ 'seed': 2023,
+ 'shuffle': True,
+ 'tensorboard_path': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/tensorboard/',
+ 'test_batch_size': 32,
+ 'test_result_dir': '/home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/result/',
+ 'text_data_dir': '/home/jiangjin/context/data/en',
+ 'train_batch_size': 32,
+ 'weight_decay': 0.02}
+2023-06-17 06:22:01.908 | INFO     | __main__:train:307 - start training ...
+2023-06-17 06:22:01.909 | INFO     | __main__:train:308 -   num example = 4143
+2023-06-17 06:22:01.909 | INFO     | __main__:train:309 -   num epochs = 30
+2023-06-17 06:22:01.909 | INFO     | __main__:train:310 -   total optimization step = 41430
+2023-06-17 06:22:01.909 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-17 06:22:01.910 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-17 06:22:01.910 | INFO     | __main__:train_epoch:402 - training epoch<1> ...
+2023-06-17 06:22:01.922 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 06:39:34.830 | INFO     | __main__:train:321 - 
+
+2023-06-17 06:39:34.831 | INFO     | __main__:train:323 - train epoch 1 time is 17.55min
+2023-06-17 06:39:34.831 | INFO     | __main__:evaluate:480 - 
+
+2023-06-17 06:39:34.832 | INFO     | __main__:evaluate:482 - evaluating epoch<1> ...
+2023-06-17 06:39:34.835 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 06:49:18.809 | INFO     | __main__:evaluate:560 - 
+
+2023-06-17 06:49:18.811 | INFO     | __main__:evaluate:563 - dev_times pre sample is 214.35s
+2023-06-17 06:49:18.811 | INFO     | __main__:evaluate:564 - dev_times is 9.49min
+2023-06-17 06:49:19.044 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-17 06:49:19.044 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03910789144664264
+2023-06-17 06:49:19.928 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-17 06:49:19.928 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.03910789144664264
+2023-06-17 06:49:19.928 | INFO     | __main__:on_evaluation_end:600 - test epoch 1 time is 2.384185791015625e-07
+2023-06-17 06:49:19.930 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-17 06:49:19.935 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-17 06:49:19.935 | INFO     | __main__:train_epoch:402 - training epoch<2> ...
+2023-06-17 06:49:19.936 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 07:06:46.128 | INFO     | __main__:train:321 - 
+
+2023-06-17 07:06:46.129 | INFO     | __main__:train:323 - train epoch 2 time is 17.44min
+2023-06-17 07:06:46.129 | INFO     | __main__:evaluate:480 - 
+
+2023-06-17 07:06:46.129 | INFO     | __main__:evaluate:482 - evaluating epoch<2> ...
+2023-06-17 07:06:46.132 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 07:16:20.213 | INFO     | __main__:evaluate:560 - 
+
+2023-06-17 07:16:20.213 | INFO     | __main__:evaluate:563 - dev_times pre sample is 210.66s
+2023-06-17 07:16:20.214 | INFO     | __main__:evaluate:564 - dev_times is 9.33min
+2023-06-17 07:16:20.436 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-17 07:16:20.436 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.0383908215047437
+2023-06-17 07:16:21.517 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-17 07:16:21.518 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.0383908215047437
+2023-06-17 07:16:21.518 | INFO     | __main__:on_evaluation_end:600 - test epoch 2 time is 0.0
+2023-06-17 07:16:21.519 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-17 07:16:21.519 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-17 07:16:21.519 | INFO     | __main__:train_epoch:402 - training epoch<3> ...
+2023-06-17 07:16:21.522 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 07:33:46.873 | INFO     | __main__:train:321 - 
+
+2023-06-17 07:33:46.874 | INFO     | __main__:train:323 - train epoch 3 time is 17.42min
+2023-06-17 07:33:46.874 | INFO     | __main__:evaluate:480 - 
+
+2023-06-17 07:33:46.874 | INFO     | __main__:evaluate:482 - evaluating epoch<3> ...
+2023-06-17 07:33:46.877 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 07:43:21.659 | INFO     | __main__:evaluate:560 - 
+
+2023-06-17 07:43:21.659 | INFO     | __main__:evaluate:563 - dev_times pre sample is 211.03s
+2023-06-17 07:43:21.660 | INFO     | __main__:evaluate:564 - dev_times is 9.34min
+2023-06-17 07:43:21.852 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-17 07:43:21.852 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03840920791351033
+2023-06-17 07:43:21.852 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-17 07:43:21.855 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-17 07:43:21.855 | INFO     | __main__:train_epoch:402 - training epoch<4> ...
+2023-06-17 07:43:21.857 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 08:01:18.523 | INFO     | __main__:train:321 - 
+
+2023-06-17 08:01:18.524 | INFO     | __main__:train:323 - train epoch 4 time is 17.94min
+2023-06-17 08:01:18.524 | INFO     | __main__:evaluate:480 - 
+
+2023-06-17 08:01:18.524 | INFO     | __main__:evaluate:482 - evaluating epoch<4> ...
+2023-06-17 08:01:18.533 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 08:12:09.521 | INFO     | __main__:evaluate:560 - 
+
+2023-06-17 08:12:09.522 | INFO     | __main__:evaluate:563 - dev_times pre sample is 238.65s
+2023-06-17 08:12:09.522 | INFO     | __main__:evaluate:564 - dev_times is 10.57min
+2023-06-17 08:12:09.713 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-17 08:12:09.713 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03851952636611017
+2023-06-17 08:12:09.714 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-17 08:12:09.714 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-17 08:12:09.714 | INFO     | __main__:train_epoch:402 - training epoch<5> ...
+2023-06-17 08:12:09.716 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 08:29:39.784 | INFO     | __main__:train:321 - 
+
+2023-06-17 08:29:39.785 | INFO     | __main__:train:323 - train epoch 5 time is 17.5min
+2023-06-17 08:29:39.785 | INFO     | __main__:evaluate:480 - 
+
+2023-06-17 08:29:39.785 | INFO     | __main__:evaluate:482 - evaluating epoch<5> ...
+2023-06-17 08:29:39.787 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 08:39:14.769 | INFO     | __main__:evaluate:560 - 
+
+2023-06-17 08:39:14.769 | INFO     | __main__:evaluate:563 - dev_times pre sample is 211.17s
+2023-06-17 08:39:14.770 | INFO     | __main__:evaluate:564 - dev_times is 9.35min
+2023-06-17 08:39:15.132 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-17 08:39:15.132 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03861145840994337
+2023-06-17 08:39:15.133 | INFO     | __main__:train:327 - 
+ -----------------------------
+2023-06-17 08:39:15.133 | INFO     | __main__:train:328 - early stopping on train epoch
+2023-06-17 08:39:15.133 | INFO     | __main__:train:329 - -----------------------------
+
+2023-06-17 08:39:15.143 | INFO     | __main__:predict:619 - 
+
+2023-06-17 08:39:15.143 | INFO     | __main__:predict:620 - start predicting ...
+2023-06-17 08:39:15.144 | INFO     | __main__:load_model:770 - load model ...
+2023-06-17 08:39:15.608 | INFO     | __main__:predict:647 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-17 08:48:58.437 | INFO     | __main__:predict:723 - test_times pre sample is 219.36s
+2023-06-17 08:48:58.437 | INFO     | __main__:predict:724 - test_times is 9.37min
+2023-06-17 08:48:58.814 | INFO     | __main__:predict:760 - 
+
+2023-06-17 08:48:58.815 | INFO     | __main__:predict:761 - raw/cer is 0.04225566484655924
+2023-06-17 08:48:58.815 | INFO     | __main__:predict:762 - 
+
+2023-06-17 08:48:58.815 | INFO     | __main__:predict:763 - test/cer is 0.04297863434866155
+2023-06-29 18:05:18.353 | INFO     | __main__:train:302 - +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2023-06-29 18:05:18.360 | INFO     | __main__:train:303 - Resumed from checkpoint: /home/jiangjin/context/T-model-baseline/en-LIBRISPEECH_CLEAN-baseline/model-checkpoint/
+2023-06-29 18:05:18.360 | INFO     | __main__:train:304 - +++++++++++++++++++++++++++++++++++++++++++++++++++++++

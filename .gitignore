@@ -1,6 +1,24 @@
 # 文件夹
 
 .tmp
+a_past_result
+analysis
+
+datastore/en/LIBRISPEECH_CLEAN
+datastore/zh/AISHELL-1
+
+Offline/*
+Offline_domain_context/*
+T-model-baseline/*
+T-model-baseline-sliding-2
+T-model-baseline-sliding-4
+T-model-baseline-sliding-6
+
+T-model-knn/*
+T-model-knn-ckpt/*
+T-model-knn-ckpt-domain-context/*
+T-model-knn-domain-context/*
+
 T-model-baseline/*/model-checkpoint/*.pt
 T-model-knn/*/model-checkpoint/*.pt
 T-model-knn-ckpt/*/model-checkpoint/*.pt
@@ -14,7 +32,6 @@ T-model-knn-ckpt/*/tensorboard
 T-model-knn-ckpt-shuffle/*/tensorboard
 T-model-knn-shuffle/*/tensorboard
 
-BASELINE/pretrained-T-model
 
 T-model-baseline/*/result/*.txt
 T-model-knn/*/result/*.txt
@@ -30,7 +47,7 @@ pretrained-model/checkpoint/AISHELL-1/*bin
 pretrained-model/checkpoint/HKUST/*.bin
 pretrained-model/checkpoint/LIBRISPEECH_CLEAN/*.bin
 
-Other-test/
+
 
 
 

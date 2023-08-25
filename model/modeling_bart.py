@@ -65,7 +65,7 @@ _num_retrieved_memories_K = 64
 # is_random_vector: bool = True
 # is_use_threshold: bool = False
 
-max_knn_memories = 65000 
+# max_knn_memories = 65000 
 dim_head = 64
 depth: int = 6 # transfromer block的个数
 
@@ -303,7 +303,7 @@ class BartAttention(nn.Module):
         attn_output = attn_output.reshape(bsz, tgt_len, self.embed_dim) #torch.Size([4, 40, 768])
 
         attn_output = self.out_proj(attn_output) 
-
+        # decoder 时，past_key_value不为none
         return attn_output, attn_weights_reshaped, past_key_value
 
 class KNNBartAttention(nn.Module):
@@ -364,7 +364,7 @@ class KNNBartAttention(nn.Module):
         is_cross_attention = key_value_states is not None
 
         bsz, tgt_len, _ = hidden_states.size()
-
+        # 这里只进行self-attention时候的插入，而不做其他时间，所以，那个4个条件的部分，可以不用考虑
         # get query proj
         query_states = self.q_proj(hidden_states) * self.scaling
         # query_states.shape: torch.Size([8, 40, 768])
@@ -376,7 +376,9 @@ class KNNBartAttention(nn.Module):
         # key_states.shape: torch.Size([8, 12, 40, 64])
         # value_states.shape: torch.Size([8, 12, 40, 64])
         
+        
         KNN = True
+        
         if KNN is True:
             device = query_states.device
             # KNN Code:
@@ -389,7 +391,8 @@ class KNNBartAttention(nn.Module):
                 beam_num = int(KNN_query_states.shape[0] / knn_memory.num_indices)
                 # 此处代码未适应参数beam_num, 后续可修改-->已经修改
                 # beam_query_list = [item for item in KNN_query_states.chunk(int(beam_num), dim=0)]
-                beam_query_list = [KNN_query_states[i::int(beam_num),:,:,:] for i in range(int(beam_num))]
+                # beam_query_list = [KNN_query_states[i::int(beam_num),:,:,:] for i in range(int(beam_num))]
+                beam_query_list = torch.chunk(KNN_query_states, beam_num, dim=0)
                 # beam_memory_keyvalue_list = []
                 # beam_memory_attention_mask_list = []
                 # for item in beam_query_list:
@@ -408,14 +411,25 @@ class KNNBartAttention(nn.Module):
                     beam_memory_keyvalue_list = [tmp_research_rand_vector for _ in range(int(beam_num)) ]
                     beam_memory_attention_mask_list = [tmp_research_rand_mask for _ in range(int(beam_num)) ]
                 else:
-                    if is_use_threshold is True: #_knn_dis_threshold
-                        beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[0] for _ in range(int(beam_num)) ]
-                        beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[1] for _ in range(int(beam_num)) ]
+                    if _knn_dis_threshold != 0 and _knn_dis_threshold is not None: #_knn_dis_threshold
+                        beam_memory_keyvalue_list, beam_memory_attention_mask_list = [], []
+                        for item in beam_query_list:
+                            tmp_keyvalue, tmp_mask = knn_memory.search(item, self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)
+                            beam_memory_keyvalue_list.append(tmp_keyvalue)
+                            beam_memory_attention_mask_list.append(tmp_mask)
+                        # beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[0] for _ in range(int(beam_num)) ]
+                        # beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)[1] for _ in range(int(beam_num)) ]
                     else:
                         # beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[i], self.num_retrieved_memories_K)[0] for i in range(int(beam_num)) ]
                         # beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[i], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
-                        beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
-                        beam_memory_attention_mask_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
+                        # beam_memory_keyvalue_list = [knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[0] for _ in range(int(beam_num)) ]
+                        beam_memory_keyvalue_list, beam_memory_attention_mask_list = [], []
+                        for item in beam_query_list:
+                            # breakpoint()
+                            tmp_keyvalue, tmp_mask = knn_memory.search(item, self.num_retrieved_memories_K)
+                            beam_memory_keyvalue_list.append(tmp_keyvalue)
+                            beam_memory_attention_mask_list.append(tmp_mask)
+                        # beam_memory_attention_mask_list = None #[knn_memory.search(beam_query_list[0], self.num_retrieved_memories_K)[1] for _ in range(int(beam_num)) ]
                 memory_keyvalue = torch.cat(beam_memory_keyvalue_list, dim=0)
                 memory_attention_mask = torch.cat(beam_memory_attention_mask_list, dim=0)
             else:
@@ -424,7 +438,7 @@ class KNNBartAttention(nn.Module):
                     memory_attention_mask = torch.rand(KNN_query_states.shape[0], KNN_query_states.shape[1], KNN_query_states.shape[2], 32) > 0 
                     memory_attention_mask = memory_attention_mask.to(device)
                 else:
-                    if is_use_threshold is True:
+                    if _knn_dis_threshold != 0 and _knn_dis_threshold is not None:
                         memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K, _knn_dis_threshold=_knn_dis_threshold)
                     else:
                         memory_keyvalue, memory_attention_mask = knn_memory.search(KNN_query_states, self.num_retrieved_memories_K)
@@ -457,7 +471,14 @@ class KNNBartAttention(nn.Module):
                     if is_random_vector is True:
                         pass
                     else:
-                        knn_memory.add(beam_new_kv_memories_list[0])
+                        # knn_memory.add(beam_new_kv_memories_list[0])
+                        # 每个句子，都add 了 beam num 倍。
+                        if knn_memory.my_config.is_offline is True:
+                            pass
+                        else:                       
+                            # [knn_memory.add(item) for item in beam_new_kv_memories_list]
+                            knn_memory.add(beam_new_kv_memories_list[0])
+                        
                 # [knn_memory.add(beam_new_kv_memories_item) for beam_new_kv_memories_item in beam_new_kv_memories_list if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0]
                 # if add_knn_memory and beam_new_kv_memories_list[0].numel() > 0:
                 #     knn_memory.add(beam_new_kv_memories_list)
@@ -473,7 +494,10 @@ class KNNBartAttention(nn.Module):
                     if is_random_vector is True:
                         pass
                     else:
-                        knn_memory.add(new_kv_memories)
+                        if knn_memory.my_config.is_offline is True:
+                            pass
+                        else:
+                            knn_memory.add(new_kv_memories)
                 
             # KNN Code PART:
             # knn_memory_attn_weights = torch.bmm(query_states, KNN_memory_key.transpose(1, 2))
@@ -552,8 +576,8 @@ class KNNBartAttention(nn.Module):
         # torch.Size([8, 12, 40, 32, 64]) --> 
         # memory_attn_output = torch.bmm(memory_attn_probs, KNN_memory_value_states)
         memory_attn_output = einsum('b i j, b i j d -> b i d', memory_attn_probs, KNN_memory_value_states)
-        # attn_output = (1-gate_parameter) * local_attn_output + gate_parameter * memory_attn_output # 此处可以加入gate改善。
-        attn_output = local_attn_output + memory_attn_output # 此处可以加入gate改善。
+        attn_output =  2 * (1-gate_parameter) * local_attn_output + 2 * gate_parameter * memory_attn_output # 此处可以加入gate改善。
+        # attn_output = local_attn_output + memory_attn_output # 此处可以加入gate改善。
         # attn_output = torch.bmm(attn_probs, value_states)
 
         if attn_output.size() != (bsz * self.num_heads, tgt_len, self.head_dim):
@@ -1429,13 +1453,13 @@ class BartDecoder(BartPretrainedModel):
         if inputs_embeds is None:
             inputs_embeds = self.embed_tokens(input) * self.embed_scale
 
-        attention_mask = self._prepare_decoder_attention_mask(
+        attention_mask = self._prepare_decoder_attention_mask( # decoder可以不输入attention，会自动生成
             attention_mask, input_shape, inputs_embeds, past_key_values_length
         )
 
         # expand encoder attention mask
         if encoder_hidden_states is not None and encoder_attention_mask is not None:
-            # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]
+            # [bsz, seq_len] -> [bsz, 1, tgt_seq_len, src_seq_len]#适应 Transformer 模型的多头自注意力计算。
             encoder_attention_mask = _expand_mask(encoder_attention_mask, inputs_embeds.dtype, tgt_len=input_shape[-1])
 
         # embed positions
@@ -1603,7 +1627,9 @@ class BartModel(BartPretrainedModel):
         return_dict: Optional[bool] = None,
         knn_memories = None,
     ) -> Union[Tuple, Seq2SeqModelOutput]:
+        
 
+        
         # different to other models, Bart automatically creates decoder_input_ids from
         # input_ids if no decoder_input_ids are provided
         if decoder_input_ids is None and decoder_inputs_embeds is None:
@@ -1703,11 +1729,11 @@ class BartForContextCorretion(BartPretrainedModel):
         # self.knn_memories_directory = knn_memories_directory
         self.knn_memorizing_layers = unique(knn_memorizing_layers)
         self.num_knn_memorizing_layers = len(knn_memorizing_layers)
-        self.max_knn_memories = max_knn_memories
+        # self.max_knn_memories = 0 #max_knn_memories 并不在此处传参数
         self.dim_head = dim_head
         self.knn_mem_kwargs = dict(
             dim = self.dim_head,
-            max_memories = self.max_knn_memories,
+            # max_memories = self.max_knn_memories,
             multiprocessing = False
         )
         self.clear_memories_on_sos_token_id = 108 #108 # 1629
@@ -1743,23 +1769,32 @@ class BartForContextCorretion(BartPretrainedModel):
     # KNN Code function:
     def create_knn_memories(
         self,
+        my_config,
         mode,
         knn_memories_directory,
+        max_memories,
+        is_knn_gpu,
         *,
         batch_size
     ):
         return KNNMemoryList.create_memories(
+            my_config = my_config,
             mode=mode,
             batch_size = batch_size,
             num_memory_layers = self.num_knn_memorizing_layers,
             memories_directory = knn_memories_directory,
+            max_memories = max_memories,
+            is_knn_gpu = is_knn_gpu,
         )(**self.knn_mem_kwargs) # {'dim': 64, 'max_memories': 7680, 'multiprocessing': False}
 
     @contextmanager
     def knn_memories_context(
         self,
+        my_config,
         mode,
         knn_memories_directory,
+        max_memories,
+        is_knn_gpu,
         **kwargs
     ):  
         
@@ -1768,9 +1803,12 @@ class BartForContextCorretion(BartPretrainedModel):
         lock = FileLock(str(knn_dir / 'mutex'))
 
         with lock:
-            knn_memories = self.create_knn_memories(mode, knn_memories_directory, **kwargs)
+            knn_memories = self.create_knn_memories(my_config, mode, knn_memories_directory, max_memories, is_knn_gpu,**kwargs)
             yield knn_memories
-            knn_memories.cleanup()
+            if my_config.is_offline is True:
+                pass
+            else:
+                knn_memories.cleanup()
 
     def clear_memory(self, x, decoder_input_ids, token_id, knn_memories):
         """ clears the KNN memories based on if the batch row contains the specified token id """
@@ -1782,7 +1820,7 @@ class BartForContextCorretion(BartPretrainedModel):
             batch_indices = batch_indices[0] 
             batch_indices_to_clear = batch_indices.tolist()
 
-            if len(batch_indices_to_clear) == 0:
+            if len(batch_indices_to_clear) == 0: # batch_indices_to_clear: 50 
                 return
 
             knn_memories.clear_memory(batch_indices_to_clear)
@@ -1833,25 +1871,26 @@ class BartForContextCorretion(BartPretrainedModel):
         Returns:
         """
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
-        # is_random_vector: bool = True
-        # is_use_threshold: bool = False
-        global gate_parameter
-        gate_parameter = decoder_TrainerConfig.gate_parameter
+        if decoder_TrainerConfig.is_use_knn is True:
+            # is_random_vector: bool = True
+            # is_use_threshold: bool = False
+            global gate_parameter
+            gate_parameter = decoder_TrainerConfig.gate_parameter
 
-        global is_random_vector
-        is_random_vector = decoder_TrainerConfig.is_random_vector
-        global is_use_threshold
-        is_use_threshold = decoder_TrainerConfig.is_use_threshold
-        global _knn_dis_threshold
-        _knn_dis_threshold = decoder_TrainerConfig._knn_dis_threshold
-        global clear_memories_on_sos_token_id # #108 # 1629
-        if decoder_TrainerConfig.language == 'zh':
-            self.clear_memories_on_sos_token_id = 108
-        else:
-            self.clear_memories_on_sos_token_id = 1629
-            
-        global _num_retrieved_memories_K 
-        _num_retrieved_memories_K = decoder_TrainerConfig._num_retrieved_memories_K
+            global is_random_vector
+            is_random_vector = decoder_TrainerConfig.is_random_vector
+            # global is_use_threshold
+            # is_use_threshold = decoder_TrainerConfig.is_use_threshold
+            global _knn_dis_threshold
+            _knn_dis_threshold = decoder_TrainerConfig._knn_dis_threshold
+            global clear_memories_on_sos_token_id # #108 # 1629
+            if decoder_TrainerConfig.language == 'zh':
+                self.clear_memories_on_sos_token_id = 108
+            else:
+                self.clear_memories_on_sos_token_id = 1629
+                
+            global _num_retrieved_memories_K 
+            _num_retrieved_memories_K = decoder_TrainerConfig._num_retrieved_memories_K
         
         if labels is not None:
             if use_cache:
@@ -1868,8 +1907,11 @@ class BartForContextCorretion(BartPretrainedModel):
         if self.config.is_use_knn:                
             assert all([memory.num_indices == batch_size for memory in decoder_knn_memories]), f'you passed in an input with batch size {input_ids.shape[0]} but your memories were not instantiated with that number of KNN indices'
                     
-            if exists(self.clear_memories_on_sos_token_id): # and False:
-                self.clear_memory(input_ids, decoder_input_ids,self.clear_memories_on_sos_token_id,decoder_knn_memories)
+            if decoder_TrainerConfig.is_offline is True:
+                pass
+            else:
+                if exists(self.clear_memories_on_sos_token_id): # and False:
+                    self.clear_memory(input_ids, decoder_input_ids,self.clear_memories_on_sos_token_id,decoder_knn_memories)
 
         outputs = self.model(
             input_ids,

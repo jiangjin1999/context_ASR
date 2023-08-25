@@ -1,0 +1,464 @@
+2023-06-16 14:23:00.333 | INFO     | __main__:<module>:957 - {'Model_config': BartConfig {
+  "_name_or_path": "/home/jiangjin/context/pretrained-model/zh/BART",
+  "activation_dropout": 0.1,
+  "activation_function": "gelu",
+  "add_bias_logits": false,
+  "add_final_layer_norm": false,
+  "architectures": [
+    "BartForConditionalGeneration"
+  ],
+  "attention_dropout": 0.1,
+  "bos_token_id": 101,
+  "classif_dropout": 0.1,
+  "classifier_dropout": 0.0,
+  "d_model": 768,
+  "decoder_attention_heads": 12,
+  "decoder_ffn_dim": 3072,
+  "decoder_layerdrop": 0.0,
+  "decoder_layers": 6,
+  "decoder_start_token_id": 102,
+  "dropout": 0.1,
+  "early_stopping": true,
+  "encoder_attention_heads": 12,
+  "encoder_ffn_dim": 3072,
+  "encoder_layerdrop": 0.0,
+  "encoder_layers": 6,
+  "eos_token_id": 102,
+  "forced_eos_token_id": 102,
+  "gradient_checkpointing": false,
+  "id2label": {
+    "0": "LABEL_0",
+    "1": "LABEL_1",
+    "2": "LABEL_2"
+  },
+  "init_std": 0.02,
+  "is_encoder_decoder": true,
+  "is_use_knn": false,
+  "knn_memorizing_layers": 6,
+  "label2id": {
+    "LABEL_0": 0,
+    "LABEL_1": 1,
+    "LABEL_2": 2
+  },
+  "max_position_embeddings": 1024,
+  "model_type": "bart",
+  "no_repeat_ngram_size": 3,
+  "normalize_before": false,
+  "normalize_embedding": true,
+  "num_beams": 4,
+  "num_hidden_layers": 6,
+  "pad_token_id": 0,
+  "scale_embedding": false,
+  "task_specific_params": {
+    "summarization": {
+      "length_penalty": 1.0,
+      "max_length": 128,
+      "min_length": 12,
+      "num_beams": 4
+    },
+    "summarization_cnn": {
+      "length_penalty": 2.0,
+      "max_length": 142,
+      "min_length": 56,
+      "num_beams": 4
+    },
+    "summarization_xsum": {
+      "length_penalty": 1.0,
+      "max_length": 62,
+      "min_length": 11,
+      "num_beams": 6
+    }
+  },
+  "tokenizer_class": "BertTokenizer",
+  "transformers_version": "4.29.2",
+  "use_cache": true,
+  "vocab_size": 51271
+}
+,
+ 'SEGMENTS': 1,
+ 'best_model_dir': '/home/jiangjin/context/T-model-baseline/zh-AISHELL-1-baseline/model-checkpoint/',
+ 'current_dataset': 'AISHELL-1',
+ 'datastore_path': '/home/jiangjin/context/datastore/zh/AISHELL-1/',
+ 'dev_batch_size': 128,
+ 'device': 'cuda',
+ 'early_stop': <utils.EarlyStopping object at 0x7fb23b12d820>,
+ 'early_stop_flag': False,
+ 'epochs': 30,
+ 'gate_parameter': 0.5,
+ 'get_device': <bound method Config.get_device of Config(prog='model-trainer.py', usage=None, description=None, formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)>,
+ 'is_add_sos_eos': False,
+ 'is_domain_datastore': False,
+ 'is_from_ckpt': False,
+ 'is_knn_gpu': False,
+ 'is_offline': False,
+ 'is_pretrained': True,
+ 'is_random_vector': False,
+ 'is_shuffle_knn': False,
+ 'is_sliding_k': 0,
+ 'is_use_knn': False,
+ 'is_zh': True,
+ 'knn_memories_directory': '/home/jiangjin/context/T-model-baseline/zh-AISHELL-1-baseline/datestore_memories/',
+ 'knn_memorizing_layers': 5,
+ 'language': 'zh',
+ 'learning_rate': 5e-05,
+ 'log_path': '/home/jiangjin/context/T-model-baseline/zh-AISHELL-1-baseline/log/',
+ 'lr_scheduler_type': 'linear',
+ 'max_memories': 65000,
+ 'max_seq_length': 45,
+ 'max_train_steps': 18770,
+ 'metric': 'cer',
+ 'mode': 'train',
+ 'mode_mode_path': '/home/jiangjin/context/T-model-baseline',
+ 'mode_mode_path_dataset': '/home/jiangjin/context/T-model-baseline/zh-AISHELL-1-baseline',
+ 'model_type': 'T-model-baseline',
+ 'num_beams': 4,
+ 'num_warmup_steps': 1877,
+ 'pretrained_model': '/home/jiangjin/context/pretrained-model/zh/BART',
+ 'pwd': '/home/jiangjin/context/',
+ 'seed': 2023,
+ 'shuffle': True,
+ 'tensorboard_path': '/home/jiangjin/context/T-model-baseline/zh-AISHELL-1-baseline/tensorboard/',
+ 'test_batch_size': 128,
+ 'test_result_dir': '/home/jiangjin/context/T-model-baseline/zh-AISHELL-1-baseline/result/',
+ 'text_data_dir': '/home/jiangjin/context/data/zh',
+ 'train_batch_size': 64,
+ 'weight_decay': 0.02}
+2023-06-16 14:23:00.389 | INFO     | __main__:train:307 - start training ...
+2023-06-16 14:23:00.390 | INFO     | __main__:train:308 -   num example = 1877
+2023-06-16 14:23:00.390 | INFO     | __main__:train:309 -   num epochs = 30
+2023-06-16 14:23:00.390 | INFO     | __main__:train:310 -   total optimization step = 18770
+2023-06-16 14:23:00.390 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 14:23:00.390 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 14:23:00.390 | INFO     | __main__:train_epoch:402 - training epoch<1> ...
+2023-06-16 14:23:00.392 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 14:33:02.450 | INFO     | __main__:train:321 - 
+
+2023-06-16 14:33:02.450 | INFO     | __main__:train:323 - train epoch 1 time is 10.03min
+2023-06-16 14:33:02.451 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 14:33:02.451 | INFO     | __main__:evaluate:482 - evaluating epoch<1> ...
+2023-06-16 14:33:02.454 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 14:52:17.738 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 14:52:17.739 | INFO     | __main__:evaluate:563 - dev_times pre sample is 1296.12s
+2023-06-16 14:52:17.739 | INFO     | __main__:evaluate:564 - dev_times is 18.9min
+2023-06-16 14:52:18.434 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 14:52:18.434 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.035674287743451064
+2023-06-16 14:52:19.173 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 14:52:19.173 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.035674287743451064
+2023-06-16 14:52:19.173 | INFO     | __main__:on_evaluation_end:600 - test epoch 1 time is 0.0
+2023-06-16 14:52:19.173 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 14:52:19.174 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 14:52:19.174 | INFO     | __main__:train_epoch:402 - training epoch<2> ...
+2023-06-16 14:52:19.175 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 15:02:14.778 | INFO     | __main__:train:321 - 
+
+2023-06-16 15:02:14.778 | INFO     | __main__:train:323 - train epoch 2 time is 9.93min
+2023-06-16 15:02:14.779 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 15:02:14.779 | INFO     | __main__:evaluate:482 - evaluating epoch<2> ...
+2023-06-16 15:02:14.781 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 15:21:15.147 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 15:21:15.147 | INFO     | __main__:evaluate:563 - dev_times pre sample is 1272.82s
+2023-06-16 15:21:15.148 | INFO     | __main__:evaluate:564 - dev_times is 18.56min
+2023-06-16 15:21:15.986 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 15:21:15.986 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03404900434319429
+2023-06-16 15:21:17.061 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 15:21:17.062 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.03404900434319429
+2023-06-16 15:21:17.062 | INFO     | __main__:on_evaluation_end:600 - test epoch 2 time is 2.384185791015625e-07
+2023-06-16 15:21:17.063 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 15:21:17.063 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 15:21:17.063 | INFO     | __main__:train_epoch:402 - training epoch<3> ...
+2023-06-16 15:21:17.065 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 15:27:52.272 | INFO     | __main__:train:321 - 
+
+2023-06-16 15:27:52.273 | INFO     | __main__:train:323 - train epoch 3 time is 6.59min
+2023-06-16 15:27:52.273 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 15:27:52.273 | INFO     | __main__:evaluate:482 - evaluating epoch<3> ...
+2023-06-16 15:27:52.277 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 17:04:04.212 | INFO     | __main__:train:302 - +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2023-06-16 17:04:04.213 | INFO     | __main__:train:303 - Resumed from checkpoint: /home/jiangjin/context/T-model-baseline/zh-AISHELL-1-baseline/model-checkpoint/
+2023-06-16 17:04:04.213 | INFO     | __main__:train:304 - +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2023-06-16 17:04:05.069 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 17:04:05.069 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 17:04:05.069 | INFO     | __main__:train_epoch:402 - training epoch<1> ...
+2023-06-16 17:04:05.071 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 17:14:05.648 | INFO     | __main__:train:321 - 
+
+2023-06-16 17:14:05.648 | INFO     | __main__:train:323 - train epoch 1 time is 10.01min
+2023-06-16 17:14:05.649 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 17:14:05.649 | INFO     | __main__:evaluate:482 - evaluating epoch<1> ...
+2023-06-16 17:14:05.651 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 17:39:14.758 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 17:39:14.759 | INFO     | __main__:evaluate:563 - dev_times pre sample is 424.22s
+2023-06-16 17:39:14.759 | INFO     | __main__:evaluate:564 - dev_times is 24.75min
+2023-06-16 17:39:15.611 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 17:39:15.612 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03269232520236372
+2023-06-16 17:39:16.667 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 17:39:16.667 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.03269232520236372
+2023-06-16 17:39:16.667 | INFO     | __main__:on_evaluation_end:600 - test epoch 1 time is 2.384185791015625e-07
+2023-06-16 17:39:16.668 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 17:39:16.668 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 17:39:16.668 | INFO     | __main__:train_epoch:402 - training epoch<2> ...
+2023-06-16 17:39:16.670 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 17:49:11.374 | INFO     | __main__:train:321 - 
+
+2023-06-16 17:49:11.374 | INFO     | __main__:train:323 - train epoch 2 time is 9.91min
+2023-06-16 17:49:11.374 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 17:49:11.375 | INFO     | __main__:evaluate:482 - evaluating epoch<2> ...
+2023-06-16 17:49:11.378 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 18:08:57.750 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 18:08:57.751 | INFO     | __main__:evaluate:563 - dev_times pre sample is 332.05s
+2023-06-16 18:08:57.752 | INFO     | __main__:evaluate:564 - dev_times is 19.37min
+2023-06-16 18:08:58.593 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 18:08:58.594 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03146767188396296
+2023-06-16 18:08:59.802 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 18:08:59.802 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.03146767188396296
+2023-06-16 18:08:59.803 | INFO     | __main__:on_evaluation_end:600 - test epoch 2 time is 2.384185791015625e-07
+2023-06-16 18:08:59.803 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 18:08:59.803 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 18:08:59.803 | INFO     | __main__:train_epoch:402 - training epoch<3> ...
+2023-06-16 18:08:59.805 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 18:15:33.064 | INFO     | __main__:train:321 - 
+
+2023-06-16 18:15:33.065 | INFO     | __main__:train:323 - train epoch 3 time is 6.55min
+2023-06-16 18:15:33.065 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 18:15:33.065 | INFO     | __main__:evaluate:482 - evaluating epoch<3> ...
+2023-06-16 18:15:33.068 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 18:27:09.068 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 18:27:09.068 | INFO     | __main__:evaluate:563 - dev_times pre sample is 191.63s
+2023-06-16 18:27:09.069 | INFO     | __main__:evaluate:564 - dev_times is 11.18min
+2023-06-16 18:27:09.872 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 18:27:09.873 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.03100330519817531
+2023-06-16 18:27:11.026 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 18:27:11.027 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.03100330519817531
+2023-06-16 18:27:11.027 | INFO     | __main__:on_evaluation_end:600 - test epoch 3 time is 2.384185791015625e-07
+2023-06-16 18:27:11.029 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 18:27:11.035 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 18:27:11.036 | INFO     | __main__:train_epoch:402 - training epoch<4> ...
+2023-06-16 18:27:11.037 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 18:33:46.238 | INFO     | __main__:train:321 - 
+
+2023-06-16 18:33:46.239 | INFO     | __main__:train:323 - train epoch 4 time is 6.59min
+2023-06-16 18:33:46.239 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 18:33:46.239 | INFO     | __main__:evaluate:482 - evaluating epoch<4> ...
+2023-06-16 18:33:46.242 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 18:45:45.984 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 18:45:45.985 | INFO     | __main__:evaluate:563 - dev_times pre sample is 198.06s
+2023-06-16 18:45:45.985 | INFO     | __main__:evaluate:564 - dev_times is 11.55min
+2023-06-16 18:45:46.791 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 18:45:46.792 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.030343176086026206
+2023-06-16 18:45:48.181 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 18:45:48.181 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.030343176086026206
+2023-06-16 18:45:48.182 | INFO     | __main__:on_evaluation_end:600 - test epoch 4 time is 2.384185791015625e-07
+2023-06-16 18:45:48.182 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 18:45:48.182 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 18:45:48.182 | INFO     | __main__:train_epoch:402 - training epoch<5> ...
+2023-06-16 18:45:48.184 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 18:52:23.079 | INFO     | __main__:train:321 - 
+
+2023-06-16 18:52:23.086 | INFO     | __main__:train:323 - train epoch 5 time is 6.58min
+2023-06-16 18:52:23.086 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 18:52:23.086 | INFO     | __main__:evaluate:482 - evaluating epoch<5> ...
+2023-06-16 18:52:23.089 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 19:04:26.313 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 19:04:26.313 | INFO     | __main__:evaluate:563 - dev_times pre sample is 198.88s
+2023-06-16 19:04:26.313 | INFO     | __main__:evaluate:564 - dev_times is 11.6min
+2023-06-16 19:04:27.166 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 19:04:27.167 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.030561701585220393
+2023-06-16 19:04:27.167 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 19:04:27.168 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 19:04:27.168 | INFO     | __main__:train_epoch:402 - training epoch<6> ...
+2023-06-16 19:04:27.170 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 19:11:02.170 | INFO     | __main__:train:321 - 
+
+2023-06-16 19:11:02.171 | INFO     | __main__:train:323 - train epoch 6 time is 6.58min
+2023-06-16 19:11:02.171 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 19:11:02.171 | INFO     | __main__:evaluate:482 - evaluating epoch<6> ...
+2023-06-16 19:11:02.173 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 19:23:06.207 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 19:23:06.208 | INFO     | __main__:evaluate:563 - dev_times pre sample is 199.27s
+2023-06-16 19:23:06.208 | INFO     | __main__:evaluate:564 - dev_times is 11.62min
+2023-06-16 19:23:07.217 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 19:23:07.217 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.030151966274231293
+2023-06-16 19:23:08.297 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 19:23:08.298 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.030151966274231293
+2023-06-16 19:23:08.298 | INFO     | __main__:on_evaluation_end:600 - test epoch 6 time is 2.384185791015625e-07
+2023-06-16 19:23:08.301 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 19:23:08.301 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 19:23:08.301 | INFO     | __main__:train_epoch:402 - training epoch<7> ...
+2023-06-16 19:23:08.303 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 19:29:43.358 | INFO     | __main__:train:321 - 
+
+2023-06-16 19:29:43.359 | INFO     | __main__:train:323 - train epoch 7 time is 6.58min
+2023-06-16 19:29:43.359 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 19:29:43.359 | INFO     | __main__:evaluate:482 - evaluating epoch<7> ...
+2023-06-16 19:29:43.364 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 19:41:33.011 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 19:41:33.011 | INFO     | __main__:evaluate:563 - dev_times pre sample is 195.36s
+2023-06-16 19:41:33.011 | INFO     | __main__:evaluate:564 - dev_times is 11.4min
+2023-06-16 19:41:33.872 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 19:41:33.873 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.029924335545904013
+2023-06-16 19:41:35.194 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 19:41:35.195 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.029924335545904013
+2023-06-16 19:41:35.196 | INFO     | __main__:on_evaluation_end:600 - test epoch 7 time is 2.384185791015625e-07
+2023-06-16 19:41:35.197 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 19:41:35.197 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 19:41:35.197 | INFO     | __main__:train_epoch:402 - training epoch<8> ...
+2023-06-16 19:41:35.200 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 19:48:08.718 | INFO     | __main__:train:321 - 
+
+2023-06-16 19:48:08.719 | INFO     | __main__:train:323 - train epoch 8 time is 6.56min
+2023-06-16 19:48:08.719 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 19:48:08.720 | INFO     | __main__:evaluate:482 - evaluating epoch<8> ...
+2023-06-16 19:48:08.722 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 19:59:27.777 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 19:59:27.778 | INFO     | __main__:evaluate:563 - dev_times pre sample is 187.46s
+2023-06-16 19:59:27.778 | INFO     | __main__:evaluate:564 - dev_times is 10.93min
+2023-06-16 19:59:28.654 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 19:59:28.654 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.029960756462436375
+2023-06-16 19:59:28.655 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 19:59:28.655 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 19:59:28.655 | INFO     | __main__:train_epoch:402 - training epoch<9> ...
+2023-06-16 19:59:28.657 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 20:05:59.481 | INFO     | __main__:train:321 - 
+
+2023-06-16 20:05:59.481 | INFO     | __main__:train:323 - train epoch 9 time is 6.51min
+2023-06-16 20:05:59.481 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 20:05:59.481 | INFO     | __main__:evaluate:482 - evaluating epoch<9> ...
+2023-06-16 20:05:59.483 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 20:16:51.635 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 20:16:51.636 | INFO     | __main__:evaluate:563 - dev_times pre sample is 180.28s
+2023-06-16 20:16:51.636 | INFO     | __main__:evaluate:564 - dev_times is 10.52min
+2023-06-16 20:16:52.415 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 20:16:52.416 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.02979230972347419
+2023-06-16 20:16:53.486 | INFO     | __main__:on_evaluation_end:590 - 
+
+2023-06-16 20:16:53.487 | INFO     | __main__:on_evaluation_end:591 - dev/best_cer is 0.02979230972347419
+2023-06-16 20:16:53.487 | INFO     | __main__:on_evaluation_end:600 - test epoch 9 time is 2.384185791015625e-07
+2023-06-16 20:16:53.487 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 20:16:53.487 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 20:16:53.488 | INFO     | __main__:train_epoch:402 - training epoch<10> ...
+2023-06-16 20:16:53.489 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 20:23:23.981 | INFO     | __main__:train:321 - 
+
+2023-06-16 20:23:23.981 | INFO     | __main__:train:323 - train epoch 10 time is 6.51min
+2023-06-16 20:23:23.981 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 20:23:23.981 | INFO     | __main__:evaluate:482 - evaluating epoch<10> ...
+2023-06-16 20:23:23.983 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 20:34:30.072 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 20:34:30.073 | INFO     | __main__:evaluate:563 - dev_times pre sample is 183.81s
+2023-06-16 20:34:30.073 | INFO     | __main__:evaluate:564 - dev_times is 10.72min
+2023-06-16 20:34:30.758 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 20:34:30.758 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.029851493712839284
+2023-06-16 20:34:30.759 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 20:34:30.759 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 20:34:30.759 | INFO     | __main__:train_epoch:402 - training epoch<11> ...
+2023-06-16 20:34:30.760 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 20:41:04.988 | INFO     | __main__:train:321 - 
+
+2023-06-16 20:41:04.988 | INFO     | __main__:train:323 - train epoch 11 time is 6.57min
+2023-06-16 20:41:04.988 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 20:41:04.989 | INFO     | __main__:evaluate:482 - evaluating epoch<11> ...
+2023-06-16 20:41:04.992 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 20:53:05.984 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 20:53:05.985 | INFO     | __main__:evaluate:563 - dev_times pre sample is 198.37s
+2023-06-16 20:53:05.985 | INFO     | __main__:evaluate:564 - dev_times is 11.57min
+2023-06-16 20:53:06.803 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 20:53:06.803 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.029851493712839284
+2023-06-16 20:53:06.804 | INFO     | __main__:train_epoch:400 - 
+
+2023-06-16 20:53:06.810 | INFO     | __main__:train_epoch:401 - =======================================
+2023-06-16 20:53:06.810 | INFO     | __main__:train_epoch:402 - training epoch<12> ...
+2023-06-16 20:53:06.813 | INFO     | __main__:train_epoch:415 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 20:59:41.833 | INFO     | __main__:train:321 - 
+
+2023-06-16 20:59:41.834 | INFO     | __main__:train:323 - train epoch 12 time is 6.58min
+2023-06-16 20:59:41.834 | INFO     | __main__:evaluate:480 - 
+
+2023-06-16 20:59:41.834 | INFO     | __main__:evaluate:482 - evaluating epoch<12> ...
+2023-06-16 20:59:41.836 | INFO     | __main__:evaluate:506 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 21:11:41.620 | INFO     | __main__:evaluate:560 - 
+
+2023-06-16 21:11:41.620 | INFO     | __main__:evaluate:563 - dev_times pre sample is 197.97s
+2023-06-16 21:11:41.620 | INFO     | __main__:evaluate:564 - dev_times is 11.55min
+2023-06-16 21:11:42.485 | INFO     | __main__:on_epoch_end:464 - 
+
+2023-06-16 21:11:42.486 | INFO     | __main__:on_epoch_end:465 - dev/cer is 0.029851493712839284
+2023-06-16 21:11:42.486 | INFO     | __main__:train:327 - 
+ -----------------------------
+2023-06-16 21:11:42.486 | INFO     | __main__:train:328 - early stopping on train epoch
+2023-06-16 21:11:42.487 | INFO     | __main__:train:329 - -----------------------------
+
+2023-06-16 21:11:42.489 | INFO     | __main__:predict:619 - 
+
+2023-06-16 21:11:42.490 | INFO     | __main__:predict:620 - start predicting ...
+2023-06-16 21:11:42.490 | INFO     | __main__:load_model:770 - load model ...
+2023-06-16 21:11:42.920 | INFO     | __main__:predict:647 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-06-16 21:18:18.398 | INFO     | __main__:predict:723 - test_times pre sample is 213.04s
+2023-06-16 21:18:18.399 | INFO     | __main__:predict:724 - test_times is 6.27min
+2023-06-16 21:18:19.358 | INFO     | __main__:predict:760 - 
+
+2023-06-16 21:18:19.358 | INFO     | __main__:predict:761 - raw/cer is 0.04312632340722078
+2023-06-16 21:18:19.358 | INFO     | __main__:predict:762 - 
+
+2023-06-16 21:18:19.359 | INFO     | __main__:predict:763 - test/cer is 0.03432594458888383

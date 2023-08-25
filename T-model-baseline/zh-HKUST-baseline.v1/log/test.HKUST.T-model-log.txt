@@ -1,0 +1,12 @@
+2023-07-02 17:40:36.325 | INFO     | __main__:predict:619 - 
+
+2023-07-02 17:40:36.325 | INFO     | __main__:predict:620 - start predicting ...
+2023-07-02 17:40:36.326 | INFO     | __main__:load_model:770 - load model ...
+2023-07-02 17:40:36.642 | INFO     | __main__:predict:647 - Build KNN Memory and Moving index to GPU took 0.0 min
+2023-07-02 17:46:03.949 | INFO     | __main__:predict:723 - test_times pre sample is 685.28s
+2023-07-02 17:46:03.949 | INFO     | __main__:predict:724 - test_times is 5.25min
+2023-07-02 17:46:04.406 | INFO     | __main__:predict:760 - 
+
+2023-07-02 17:46:04.406 | INFO     | __main__:predict:762 - 
+
+2023-07-02 17:46:04.406 | INFO     | __main__:predict:763 - test/cer is 0.20874037706861714
